@@ -41,7 +41,7 @@ def filter_candidates(candidates: List[str]):
     out = [
         candidate for candidate in candidates if remove_punct(candidate)
     ]  # make sure that lines containing only punctuation are excluded
-    return out
+    return list(set(out))
 
 
 def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:

@@ -29,11 +29,12 @@ def main():
         # add the selected line
         generator.add_line(line_candidates[selection])
 
+        # generate candidates for new line
+        line_candidates = generator.get_line_candidates()
+
         # print current state of the poem
         print("\nCURRENT POEM STATE:")
         print("\t", generator.state.plain_text(separator="\n\t "))
-
-        line_candidates = generator.get_line_candidates()
 
     print("\nGENERATED POEM:")
     print("\t", generator.state.plain_text(separator="\n\t "))
