@@ -1,14 +1,15 @@
 # README
 
-This folder contains a lot of stuff that is outdated or useless. It should be cleaned up at a certain point...
-
-The most relevant files and folders are:
+Files and folders:
 
  * `train_gen_model.py` script to train a generative model for next line generation
  * `training_config` contains example configuration files for the `train_gen_model.py` script  
- * `run_training.sh` wrapper to run python scripts in a virtual environment (useful especially for batch jobs)
- * `predict_mbart.py` script to generate poems with the trained models. does not support config files, needs to be tweaked to each specific model
- * `job_mbart_*.sh` example batch job scripts (for Turso, probably needs to be modified to run on CSC clusters)
+ * `jobs` stuff necessary to run batch jobs in Turso (probably needs changes to be use don CSC)
+ * `models` a place where to store the text generation models to be used by the generator
+ * `poem_generator` poem generator implementation
+ * `example.py` example implementation of interactive poem generator
+ * `test.py` unit tests
+ * `train_data_check.py` utility to check for duplicates in training dataset
 
 ## Dependencies
 
@@ -18,6 +19,13 @@ The most relevant files and folders are:
 * protobuf
 * sentencepiece
 
+## How to run the example poem generator
+
+IMPORTANT: the fine-tuned models must be placed in the `models` directory before running the example!
+```shell
+python example.py
+```
+Then you can just follow the instructions!
 
 ## How to fine-tune a seq2seq model
 
@@ -30,10 +38,10 @@ python train_gen_model.py training_config/<YOUR_CONFIG_FILE>.ini
 ```
 
 If you want to run it in a batch job, you will probably want to activate a virtual environment before running the script.
-If you are using anaconda, you can use the wrapper script `run_training.sh`, which activates the specified virtual 
+If you are using anaconda, you can use the wrapper script `jobs/run_training.sh`, which activates the specified virtual 
 environment before running python. You probably have to modify the script according to your environment settings.
 
-Example batch job scripts (tested in Turso) can be found in the folder, named as `job_mbart_*.sh`.
+Example batch job scripts (tested in Turso) can be found in the `jobs` folder.
 
 # Some Notes
 
@@ -50,7 +58,7 @@ Related work:
  * https://helda.helsinki.fi//bitstream/handle/10138/308738/nlg_poetry_finnish.pdf?sequence=1 (finnish poetry - NLG pipeline)
  * https://aclanthology.org/W19-8637.pdf (poetry generation with genetic algo)
 
-## Files and folders
+## Legacy stuff and utilities to produce the training dataset (not in this repo!)
 
 #### `build_gutenberg_cache.py`
 
@@ -69,11 +77,7 @@ Corpus downloaded from https://github.com/aparrish/gutenberg-poetry-corpus
 
 Tentative script to separate actual poetry in the books... Not usable, must be improved.
 
-## Conda virtual environments
-
- * `finnishPoetryGeneration` python 3.7 (to generate the poetry corpus)
-
-## TODOs
+## Some TODOs
 
 Problem: quite often, the output sequence is just a copy of the input sequence - or very similar.
 Could this be due to the presence of songs in the training data? If so, there are probably many examples taken from
