@@ -2,11 +2,12 @@
 
 Files and folders:
 
- * `train_gen_model.py` script to train a generative model for next line generation
  * `training_config` contains example configuration files for the `train_gen_model.py` script  
  * `jobs` stuff necessary to run batch jobs in Turso (probably needs changes to be use don CSC)
  * `models` a place where to store the text generation models to be used by the generator
  * `poem_generator` poem generator implementation
+ * `legacy` old stuff - you should't care about this
+ * `train_gen_model.py` script to train a generative model for next line generation
  * `example.py` example implementation of interactive poem generator
  * `test.py` unit tests
  * `train_data_check.py` utility to check for duplicates in training dataset
