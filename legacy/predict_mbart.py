@@ -2,7 +2,7 @@ import logging
 import os
 import random
 from typing import List
-from utils import remove_punct, tokenize
+from poem_generator.utils import remove_punct, tokenize
 
 import torch
 from transformers import (

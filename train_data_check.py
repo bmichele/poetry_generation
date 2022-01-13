@@ -2,7 +2,7 @@ import os
 import csv
 import logging
 from typing import List, Tuple
-from utils import remove_punct, tokenize
+from poem_generator.utils import remove_punct, tokenize
 
 logging.basicConfig(level=logging.DEBUG)
 
