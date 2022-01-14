@@ -2,6 +2,10 @@
 
 This is a small and simple contribution guide, every contribution is welcome if it is compliant with this guide.
 
+## Code Format
+
+Before committing new code, run [black](https://black.readthedocs.io/en/stable/#) on the modified files to format the code.
+
 ## How to Add a Model
 
 ### Adding the Code in the Generator Implementation
