@@ -1,5 +1,8 @@
 # README
 
+This repository contains a simple implementation and some examples to generate poems with python by using neural network models.  
+To contribute to this project, please send us a pull request from your fork of this repository. If you want to contribute, more information are given in the [contribution guideline](https://github.com/bmichele/poetry_generation/blob/main/CONTRIBUTING.md).
+
 ## Setting up the Poem Generator
 
 First, clone the repository and install the required packages:
