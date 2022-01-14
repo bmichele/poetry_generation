@@ -1,6 +1,57 @@
 # README
 
-Files and folders:
+## Setting up the Poem Generator
+
+First, clone the repository and install the required packages:
+```shell
+$ git clone https://github.com/bmichele/poetry_generation.git
+$ cd poetry_generation/
+$ pip install -r requirements.txt
+```
+
+
+At this point, you can use the `generator` class to generate a poem as follows.
+IMPORTANT: the fine-tuned models must be placed in the `models` directory before running the code!
+Disclaimer: the generator might not be able to write down the Kalevala :sweat_smile:
+```shell
+$ python
+>>>
+>>> from poem_generator.generator import PoemGenerator
+>>> from poem_generator.io.config import PoemGeneratorConfiguration
+>>>
+>>> # initialize the generator
+>>> config = PoemGeneratorConfiguration(lang="fi", style="modern")
+>>> generator = PoemGenerator(config)
+>>>
+>>> # generate candidates for the first line with the `PoemGenerator.get_first_line_candidates` method
+>>> first_line_candidates = generator.get_first_line_candidates()
+>>> print(first_line_candidates.plain_text())
+Mieleni minun tekevi, aivoni ajattelevi
+>>>
+>>> # select the line by index and add it to the poem with the `PoemGenerator.add_line` method
+>>> generator.add_line(first_line_candidates[0])
+>>>
+>>> # generate candidates for the next line
+>>> line_candidates = generator.get_line_candidates()
+>>> print(line_candidates.plain_text())
+lähteäni laulamahan, saa'ani sanelemahan,
+>>>
+>>> # add the selected line to the poem with the `PoemGenerator.add_line` method
+>>> generator.add_line(line_candidates[0])
+>>>
+>>> # print the poem
+>>> print(generator.state.plain_text())
+Mieleni minun tekevi, aivoni ajattelevi
+lähteäni laulamahan, saa'ani sanelemahan,
+```
+
+A simple command-line utilities to generate poems can be found in `example.py`. You can run the python script as follows:
+```shell
+python example.py
+```
+Then you can just follow the instructions from the prompt!
+
+## Repository Files and Folders
 
  * `training_config` contains example configuration files for the `train_gen_model.py` script  
  * `jobs` stuff necessary to run batch jobs in Turso (probably needs changes to be use don CSC)
@@ -11,22 +62,6 @@ Files and folders:
  * `example.py` example implementation of interactive poem generator
  * `test.py` unit tests
  * `train_data_check.py` utility to check for duplicates in training dataset
-
-## Dependencies
-
-* pytorch
-* transformers
-* datasets
-* protobuf
-* sentencepiece
-
-## How to run the example poem generator
-
-IMPORTANT: the fine-tuned models must be placed in the `models` directory before running the example!
-```shell
-python example.py
-```
-Then you can just follow the instructions!
 
 ## How to fine-tune a seq2seq model
 

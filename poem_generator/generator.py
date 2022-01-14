@@ -17,7 +17,7 @@ class PoemGenerator:
 
     def get_first_line_candidates(self) -> PoemLineList:
         # TODO: implement
-        return PoemLineList([PoemLine(text="La nebbia agli irti colli,")])
+        return PoemLineList([PoemLine(text="Mieleni minun tekevi, aivoni ajattelevi")])
 
     def get_line_candidates(self) -> PoemLineList:
         if self.config.lang == "fi":
