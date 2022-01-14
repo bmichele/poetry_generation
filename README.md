@@ -9,9 +9,8 @@ $ cd poetry_generation/
 $ pip install -r requirements.txt
 ```
 
-
-At this point, you can use the `generator` class to generate a poem as follows.
-IMPORTANT: the fine-tuned models must be placed in the `models` directory before running the code!
+At this point, you can use the `generator` class to generate a poem as follows.  
+IMPORTANT: the fine-tuned models must be placed in the `models` directory before running the code!  
 Disclaimer: the generator might not be able to write down the Kalevala :sweat_smile:
 ```shell
 $ python
@@ -66,8 +65,7 @@ Then you can just follow the instructions from the prompt!
 ## How to fine-tune a seq2seq model
 
 To run the `train_gen_model.py` script, you need to install all the required packages, and write your own configuration 
-file. The file is parsed by the [configparser](https://docs.python.org/3/library/configparser.html) package, and example files are given in the folder `training_config`.
-
+file. The file is parsed by the [configparser](https://docs.python.org/3/library/configparser.html) package, and example files are given in the folder `training_config`.  
 Once you have your configuration file, you can start the fine-tuning by running
 ```shell
 python train_gen_model.py training_config/<YOUR_CONFIG_FILE>.ini
@@ -75,8 +73,7 @@ python train_gen_model.py training_config/<YOUR_CONFIG_FILE>.ini
 
 If you want to run it in a batch job, you will probably want to activate a virtual environment before running the script.
 If you are using anaconda, you can use the wrapper script `jobs/run_training.sh`, which activates the specified virtual 
-environment before running python. You probably have to modify the script according to your environment settings.
-
+environment before running python. You probably have to modify the script according to your environment settings.  
 Example batch job scripts (tested in Turso) can be found in the `jobs` folder.
 
 # Some Notes
