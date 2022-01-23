@@ -21,14 +21,16 @@ $ python
 >>> from poem_generator.generator import PoemGenerator
 >>> from poem_generator.io.config import PoemGeneratorConfiguration
 >>>
+>>> # give keywords
+>>> keywords = "rakkaus anarkia"
 >>> # initialize the generator
 >>> config = PoemGeneratorConfiguration(lang="fi", style="modern")
->>> generator = PoemGenerator(config)
+>>> generator = PoemGenerator(config, keywords)
 >>>
 >>> # generate candidates for the first line with the `PoemGenerator.get_first_line_candidates` method
 >>> first_line_candidates = generator.get_first_line_candidates()
 >>> print(first_line_candidates.plain_text())
-Mieleni minun tekevi, aivoni ajattelevi
+>>> Voi rakkaus, joka ei ole anarkia!
 >>>
 >>> # select the line by index and add it to the poem with the `PoemGenerator.add_line` method
 >>> generator.add_line(first_line_candidates[0])
@@ -36,15 +38,17 @@ Mieleni minun tekevi, aivoni ajattelevi
 >>> # generate candidates for the next line
 >>> line_candidates = generator.get_line_candidates()
 >>> print(line_candidates.plain_text())
-lähteäni laulamahan, saa'ani sanelemahan,
+>>> Ja liikehuolissansa
+>>> Ja liikehuolissani
+>>> Ja liikehuolten maljassa ottakaa!
 >>>
 >>> # add the selected line to the poem with the `PoemGenerator.add_line` method
 >>> generator.add_line(line_candidates[0])
 >>>
 >>> # print the poem
 >>> print(generator.state.plain_text())
-Mieleni minun tekevi, aivoni ajattelevi
-lähteäni laulamahan, saa'ani sanelemahan,
+>>> Voi rakkaus, joka ei ole anarkia!
+>>> Ja liikehuolissansa
 ```
 
 A simple command-line utilities to generate poems can be found in `example.py`. You can run the python script as follows:
@@ -58,6 +62,7 @@ Then you can just follow the instructions from the prompt!
 | Base Model                | Training Data | Language | Download Link |
 |---------------------------|---------------|----------|------|
 | [facebook/mbart-large-cc25](https://huggingface.co/facebook/mbart-large-cc25) | wikisource    | finnish  | [wikisource-fi-mbart.pytorch_model.bin](https://drive.google.com/file/d/1W6tDai7Fh42622UJIk6TsWI0uMBlcPX4/view?usp=sharing) |
+| [facebook/mbart-large-cc25](https://huggingface.co/facebook/mbart-large-cc25) | gutenberg, wikisource    | finnish  | [mbart-finnish-capitalized-20-epochs.tar.gz](https://helsinkifi-my.sharepoint.com/:u:/g/personal/sivanova_ad_helsinki_fi/EWlOm8lwnTNLgAjzsCkOdYIBNMp9zq7ODHNkwAQ215T6Zg?e=ve95Vz) |
 
 ## Repository Files and Folders
 

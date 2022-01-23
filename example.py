@@ -4,9 +4,11 @@ from poem_generator.io.candidates import PoemLine, PoemLineList
 
 
 def main():
+    # give keywords
+    keywords = input("Give keywords for the poem: ")
     # initialize the poem generator
     config = PoemGeneratorConfiguration(lang="fi", style="text")
-    generator = PoemGenerator(config)
+    generator = PoemGenerator(config, keywords)
 
     # get candidates for the first line
     line_candidates = generator.get_first_line_candidates()
