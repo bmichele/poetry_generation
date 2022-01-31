@@ -9,8 +9,9 @@ from transformers import (
 
 from poem_generator.io.candidates import PoemLine, PoemLineList
 from poem_generator.utils import remove_punct
+from poem_generator.utils import filter_candidates
 
-# This file contains the code for generating the next line with all supported models.
+# This file contains the code for generating the first line with all supported models.
 # In future, it can become a package with several file (one for each implementation)
 
 BASE_MODEL = "facebook/mbart-large-cc25"
@@ -44,14 +45,6 @@ def get_model():
     model.to(DEVICE)
 
     return model
-
-
-def filter_candidates(candidates: List[str]):
-    out = [
-        candidate for candidate in candidates if remove_punct(candidate)
-    ]  # make sure that lines containing only punctuation are excluded
-    return list(set(out))
-
 
 def generate(keywords, tokenizer, model) -> PoemLineList:
     """

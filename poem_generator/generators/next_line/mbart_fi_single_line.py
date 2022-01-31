@@ -9,6 +9,7 @@ from transformers import (
 
 from poem_generator.io.candidates import PoemLine, PoemLineList
 from poem_generator.utils import remove_punct
+from poem_generator.utils import filter_candidates
 
 # This file contains the code for generating the next line with all supported models.
 # In future, it can become a package with several file (one for each implementation)
@@ -35,13 +36,6 @@ def get_tokenizer_and_model():
     model.to(DEVICE)
 
     return tokenizer, model
-
-
-def filter_candidates(candidates: List[str]):
-    out = [
-        candidate for candidate in candidates if remove_punct(candidate)
-    ]  # make sure that lines containing only punctuation are excluded
-    return list(set(out))
 
 
 def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:

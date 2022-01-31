@@ -25,10 +25,10 @@ $ python
 >>> keywords = "rakkaus anarkia"
 >>> # initialize the generator
 >>> config = PoemGeneratorConfiguration(lang="fi", style="modern")
->>> generator = PoemGenerator(config, keywords)
+>>> generator = PoemGenerator(config)
 >>>
 >>> # generate candidates for the first line with the `PoemGenerator.get_first_line_candidates` method
->>> first_line_candidates = generator.get_first_line_candidates()
+>>> first_line_candidates = generator.get_first_line_candidates(keywords)
 >>> print(first_line_candidates.plain_text())
 >>> Voi rakkaus, joka ei ole anarkia!
 >>>
