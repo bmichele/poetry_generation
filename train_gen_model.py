@@ -37,13 +37,13 @@ logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 
 if __name__ == "__main__":
 
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("config_file", type=str, help="Training config file")
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("config_file", type=str, help="Training config file")
+    args = parser.parse_args()
 
-    args = argparse.Namespace(
-        config_file="training_config/mbart_debug.ini"
-    )
+    # args = argparse.Namespace(
+    #     config_file="training_config/mbart_debug.ini"
+    # )
 
     ########################################################################################################################
     # Reading config file
