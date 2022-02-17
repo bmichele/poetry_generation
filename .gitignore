@@ -3,3 +3,4 @@ README_cpouta.md
 __pycache__
 models/*
 !models/.keep
+*.log
