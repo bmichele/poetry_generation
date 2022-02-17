@@ -268,7 +268,7 @@ if __name__ == "__main__":
         logging.info("Saving val data to file")
         example_list_to_csv(
             examples_val,
-            ("id", "gutenberg_id", "line", "next_line"),
+            ("id", "line", "next_line"),
             os.path.join(DATA_DIR, "data.{}.{}.val.csv".format(LANG, "mixed_lines")),
         )
 
