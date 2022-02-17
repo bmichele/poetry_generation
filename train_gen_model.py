@@ -45,9 +45,9 @@ if __name__ == "__main__":
     #     config_file="training_config/mbart_debug.ini"
     # )
 
-    ########################################################################################################################
+    ####################################################################################################################
     # Reading config file
-    ########################################################################################################################
+    ####################################################################################################################
 
     logging.info("Reading config file {}".format(args.config_file))
     config = configparser.ConfigParser(os.environ, interpolation=configparser.ExtendedInterpolation())
@@ -120,16 +120,15 @@ if __name__ == "__main__":
     if DISABLE_TQDM:
         set_verbosity_error()
 
-    ########################################################################################################################
+    ####################################################################################################################
     # check cuda
-    ########################################################################################################################
+    ####################################################################################################################
     cuda_available = torch.cuda.is_available()
     logging.info("cuda available: {}".format(cuda_available))
 
-
-    ########################################################################################################################
+    ####################################################################################################################
     # load model and tokenizer
-    ########################################################################################################################
+    ####################################################################################################################
 
     logging.info("loading tokenizer and model")
     if MODEL == "facebook/mbart-large-cc25":
@@ -182,27 +181,26 @@ if __name__ == "__main__":
     model.resize_token_embeddings(len(tokenizer))
     logging.info("Vocab size after adding special tokens: {}".format(model.config.vocab_size))
 
-
-    ########################################################################################################################
+    ####################################################################################################################
     # Load data from csv file
-    ########################################################################################################################
+    ####################################################################################################################
 
     logging.info("loading data")
     dataset = load_dataset(
         "csv", data_files={"train": DATA_TRAIN, "validation": DATA_VAL}, delimiter=",",
     )
     if DEBUG:
-        dataset["train"] = dataset["train"].select(range(8250))
-        dataset["validation"] = dataset["validation"].select(range(2080))
+        dataset["train"] = dataset["train"].select(range(100000))
+        dataset["validation"] = dataset["validation"].select(range(25000))
 
     if CHECK_MAX_SEQ_LEN:
         # find max sequence length after tokenizing
-        logging.info("determining length of tokenized sequences")
+        logging.info("determining length of tokenized sequences (sample 100000 and 25000 examples from train and val)")
         sequence_lengths_X = [
-            len(tokenizer.tokenize(example[COLUMN_SRC])) for example in dataset["train"]
+            len(tokenizer.tokenize(example[COLUMN_SRC])) for example in dataset["train"].select(range(100000))
         ]
         sequence_lengths_y = [
-            len(tokenizer.tokenize(example[COLUMN_TRG])) for example in dataset["train"]
+            len(tokenizer.tokenize(example[COLUMN_TRG])) for example in dataset["train"].select(range(25000))
         ]
 
         logging.info("Average lengths")
@@ -215,10 +213,9 @@ if __name__ == "__main__":
         logging.info(np.percentile(sequence_lengths_X, 99))
         logging.info(np.percentile(sequence_lengths_y, 99))
 
-
-    ########################################################################################################################
+    ####################################################################################################################
     # Data preparation
-    ########################################################################################################################
+    ####################################################################################################################
 
     if DO_TRAIN:
 
@@ -261,9 +258,9 @@ if __name__ == "__main__":
         ]
         dataset.set_format(type="torch", columns=columns)
 
-        ########################################################################################################################
+        ################################################################################################################
         # Model Fine-Tuning
-        ########################################################################################################################
+        ################################################################################################################
 
         logging.info("setup trainer")
         training_args = TrainingArguments(
