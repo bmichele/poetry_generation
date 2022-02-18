@@ -2,13 +2,15 @@ from __future__ import annotations
 
 import logging
 import math as m
+import string
 from collections import Counter
 from typing import List, Optional, Dict
 
 import numpy as np
 import spacy
+from gensim import matutils
+from gensim.models.keyedvectors import KeyedVectors
 from tqdm import tqdm
-from copy import deepcopy
 
 logger = logging.getLogger(__name__)
 
@@ -143,8 +145,8 @@ class EntityGrid:
         self.array = np.array(rows)
 
 
-class CoherenceEstimator:
-    def __init__(self, annotator, max_ngram: int):
+class SyntacticCoherenceEstimator:
+    def __init__(self, annotator: SyntacticAnnotator, max_ngram: int):
         self.annotator = annotator
         self.max_ngram = max_ngram
         self.grids: List[EntityGrid] = list()
@@ -233,7 +235,76 @@ class CoherenceEstimator:
         return log_probability / paragraph_grid.array.size
 
 
+class SemanticCoherenceEstimator:
+
+    def __init__(self, w2v_model: KeyedVectors, annotator: Optional[SyntacticAnnotator] = None):
+        self.w2v_model = w2v_model
+        self.annotator = annotator
+
+    def _words_to_vectors(self, words: List[str]) -> List[np.array]:
+        vectors = []
+        for key in words:
+            try:
+                wv = self.w2v_model.get_vector(key)
+                vectors.append(wv)
+            except KeyError:
+                logger.debug("Vector not found for word '{}'".format(key))
+        return vectors
+
+    def _n_similarity(self, ws1, ws2):
+        """This is a copy of the gensim.keyedvectors.n_similarity implementation with some small modifications
+        Compute cosine similarity between two sets of keys.
+
+        Parameters
+        ----------
+        ws1 : list of str
+            Sequence of keys.
+        ws2: list of str
+            Sequence of keys.
+
+        Returns
+        -------
+        numpy.ndarray
+            Similarities between `ws1` and `ws2`.
+
+        """
+        if not(len(ws1) and len(ws2)):
+            raise ZeroDivisionError('At least one of the passed list is empty.')
+        v1 = self._words_to_vectors(ws1)
+        v2 = self._words_to_vectors(ws2)
+        if not(len(v1) and len(v2)):
+            return float("inf")
+        else:
+            return np.dot(matutils.unitvec(np.array(v1).mean(axis=0)), matutils.unitvec(np.array(v2).mean(axis=0)))
+
+    def predict(self, line1: str, line2: str, stopwords: bool = True, fast_tokenize: bool = True, remove_punct: bool = False):
+        if remove_punct:
+            line1 = line1.translate(str.maketrans('', '', string.punctuation)).strip()
+            line2 = line2.translate(str.maketrans('', '', string.punctuation)).strip()
+        if not stopwords or not fast_tokenize:
+            assert self.annotator is not None, "Annotator required to remove stopwords and proper accurate tokenization"
+            annotated_1 = self.annotator.annotate(line1)
+            annotated_2 = self.annotator.annotate(line2)
+            if not stopwords:
+                annotated_1 = [token for token in annotated_1 if not token.is_stop]
+                annotated_2 = [token for token in annotated_2 if not token.is_stop]
+            words_1 = [token.text for token in annotated_1]
+            words_2 = [token.text for token in annotated_2]
+        else:
+            words_1 = line1.split()
+            words_2 = line2.split()
+        if not (len(words_1) and len(words_2)):
+            return float("inf")
+        logger.debug("Computing self._n_similarity with word sets {} and {}".format(words_1, words_2))
+        # other options I can consider here:
+        #  * normalize vectors before averaging them (n_similarity is not doing that)
+        #  * use self.w2v_model.wmdistance instead of n_similarity
+        return self._n_similarity(words_1, words_2)
+
+
 if __name__ == "__main__":
+
+    # Just a quick test...
 
     poem_1 = """
     Come when the nights are bright with stars
@@ -266,11 +337,22 @@ if __name__ == "__main__":
     nlp.add_pipe("merge_entities")
 
     my_annotator = SyntacticAnnotator(nlp)
-    estimator = CoherenceEstimator(my_annotator, 4)
+    estimator = SyntacticCoherenceEstimator(my_annotator, 4)
     estimator.train([poem_1, poem_2], False)
-    out = estimator.predict(poem_3, False, 2)
-    # print(out)
-    # print(m.exp(out))
-    #
-    # test_grid = EntityGrid(my_annotator)
-    # test_grid.train(poem_1, False)
+    out = estimator.predict(poem_2, False, 2)
+
+    import os
+
+    model_dir = "/Users/miche/uniModels"
+
+    w = KeyedVectors.load_word2vec_format(
+        os.path.join(model_dir, "GoogleNews-vectors-negative300.bin"),
+        binary=True
+    )
+
+    nlp = spacy.load("en_core_web_sm")
+    my_annotator = SyntacticAnnotator(nlp)
+    estimator = SemanticCoherenceEstimator(w, my_annotator)
+    estimator.predict("something about dogs", "something about cats", stopwords=True)
+    estimator.predict("something about dogs", "something about money", stopwords=True, fast_tokenize=True)
+    estimator.predict("asds test", "test.", stopwords=False)
