@@ -11,8 +11,7 @@ from poem_generator.io.candidates import PoemLine, PoemLineList
 from poem_generator.utils import remove_punct
 from poem_generator.utils import filter_candidates
 
-# This file contains the code for generating the next line with all supported models.
-# In future, it can become a package with several file (one for each implementation)
+# This file contains the code for generating the next line with the wikisource-fi-mbart.pytorch_model.bin model.
 
 BASE_MODEL = "facebook/mbart-large-cc25"
 MODEL_FILE = "models/wikisource-fi-mbart.pytorch_model.bin"
@@ -57,6 +56,7 @@ def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:
         # repetition_penalty=5.0,
         early_stopping=True,
         num_return_sequences=5,
+        decoder_start_token_id=tokenizer.lang_code_to_id["fi_FI"],
     )
 
     candidates = [
