@@ -55,16 +55,14 @@ def generate(keywords, tokenizer, model) -> PoemLineList:
     encoded = tokenizer.encode(
         source, padding="max_length", max_length=32, truncation=True
     )
-    encoded = torch.tensor(encoded).unsqueeze(0).to(DEVICE)
+    encoded = torch.tensor([encoded] * 10).to(DEVICE)
 
     sample_outputs = model.generate(
         encoded,
         do_sample=True,
         max_length=16,
-        num_beams=5,
-        # repetition_penalty=5.0,
-        early_stopping=True,
-        num_return_sequences=5,
+        temperature=5.,
+        top_k=5,
     )
 
     candidates = [
