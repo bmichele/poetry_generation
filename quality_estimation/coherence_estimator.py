@@ -16,14 +16,15 @@ logger = logging.getLogger(__name__)
 
 
 class AnnotatedToken:
-    def __init__(self, text: str, is_stop: bool, annotation: str):
+    def __init__(self, text: str, is_stop: bool, annotation: str, lemma: str = None):
         self.text = text
         self.is_stop = is_stop
         self.annotation = annotation
+        self.lemma = lemma
 
     def __str__(self):
-        return "AnnotatedToken({}, {}, {})".format(
-            self.text, self.is_stop, self.annotation
+        return "AnnotatedToken({}, {}, {}, {})".format(
+            self.text, self.is_stop, self.annotation, self.lemma
         )
 
     def __repr__(self):
@@ -102,7 +103,10 @@ class SyntacticAnnotator:
         return AnnotatedPhrase(
             [
                 AnnotatedToken(
-                    token.text, token.is_stop, entities_dict.get(token.dep_[1:], "X")
+                    text=token.text,
+                    is_stop=token.is_stop,
+                    annotation=entities_dict.get(token.dep_[1:], "X"),
+                    lemma=token.lemma_,
                 )
                 for token in annotated_doc
             ]
