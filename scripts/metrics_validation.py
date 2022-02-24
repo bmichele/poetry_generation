@@ -226,7 +226,9 @@ if __name__ == "__main__":
     results = {}
     for poem_dataset_name, poem_dataset in validation_datasets.items():
         logger.info("Processing {} dataset".format(poem_dataset_name))
-        scores = [np.array([])] * max_context_lines  # store here all the values for each order
+        scores = [
+            np.array([])
+        ] * max_context_lines  # store here all the values for each order
         score_sums = np.zeros(max_context_lines)
         score_counts = np.zeros(max_context_lines)
         for poem in tqdm(poem_dataset):
@@ -267,7 +269,7 @@ if __name__ == "__main__":
         results[poem_dataset_name] = {
             "mean_n_coherence_values": average_scores,
             "example_counts": score_counts,
-            "std": np.array([np.std(order_scores) for order_scores in scores])
+            "std": np.array([np.std(order_scores) for order_scores in scores]),
         }
 
     # final_results = {
@@ -300,6 +302,20 @@ if __name__ == "__main__":
     #                 93714.0,
     #             ]
     #         ),
+    #         "std": np.array(
+    #             [
+    #                 0.1529181,
+    #                 0.14654541,
+    #                 0.14514876,
+    #                 0.142764,
+    #                 0.13960494,
+    #                 0.13878592,
+    #                 0.1359743,
+    #                 0.13507414,
+    #                 0.13317953,
+    #                 0.13234273,
+    #             ]
+    #         ),
     #     },
     #     "shuffled_poems": {
     #         "mean_n_coherence_values": np.array(
@@ -328,6 +344,20 @@ if __name__ == "__main__":
     #                 101440.0,
     #                 96660.0,
     #                 92220.0,
+    #             ]
+    #         ),
+    #         "std": np.array(
+    #             [
+    #                 0.14905079,
+    #                 0.14511935,
+    #                 0.14177636,
+    #                 0.13933253,
+    #                 0.13715044,
+    #                 0.1351616,
+    #                 0.13362644,
+    #                 0.13197011,
+    #                 0.13058726,
+    #                 0.12944718,
     #             ]
     #         ),
     #     },
@@ -360,22 +390,47 @@ if __name__ == "__main__":
     #                 79337.0,
     #             ]
     #         ),
+    #         "std": np.array(
+    #             [
+    #                 0.0987356,
+    #                 0.09853206,
+    #                 0.09906053,
+    #                 0.09991255,
+    #                 0.10075827,
+    #                 0.10152669,
+    #                 0.10238707,
+    #                 0.10293015,
+    #                 0.10376243,
+    #                 0.1044397,
+    #             ]
+    #         ),
     #     },
     # }
 
-    # ns = np.arange(max_context_lines)
-    #
-    # plt.plot(
-    #     ns,
-    #     results["real_poems"]["mean_n_coherence_values"],
-    #     "g^",
-    #     ns,
-    #     results["shuffled_poems"]["mean_n_coherence_values"],
-    #     "bs",
-    #     ns,
-    #     results["mixed_poems"]["mean_n_coherence_values"],
-    #     "rd",
-    # )
-    # plt.ylabel("n-Semantic Coherence")
-    # plt.xlabel("n")
-    # plt.savefig("n_semanticCoherence.png")
+    ns = np.arange(1, max_context_lines + 1)
+
+    plt.plot(
+        ns,
+        results["real_poems"]["mean_n_coherence_values"],
+        "g^",
+        label="Real poems",
+    )
+    plt.plot(
+        ns,
+        results["shuffled_poems"]["mean_n_coherence_values"],
+        "bs",
+        label="Shuffled poems",
+    )
+    plt.plot(
+        ns,
+        results["mixed_poems"]["mean_n_coherence_values"],
+        "rd",
+        label="Mixed poems",
+    )
+    plt.legend(loc="lower right")
+    plt.ylabel("n-Semantic Coherence")
+    plt.xlabel("n")
+    plt.xticks(ns)
+    plt.grid(axis="y")
+    # plt.show()
+    plt.savefig("n_semanticCoherence.png")
