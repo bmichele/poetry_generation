@@ -3,3 +3,5 @@ transformers==4.15.0
 datasets==1.17.0
 protobuf==3.19.3
 sentencepiece==0.1.96
+pronouncing==0.2.0
+editdistance==0.6.0
