@@ -1,5 +1,7 @@
 # README
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/25dc644dae5a45c3a19261181f5b8b3e)](https://app.codacy.com/gh/bmichele/poetry_generation?utm_source=github.com&utm_medium=referral&utm_content=bmichele/poetry_generation&utm_campaign=Badge_Grade_Settings)
+
 This repository contains a simple implementation and some examples to generate poems with python by using neural network models.  
 To contribute to this project, please send us a pull request from your fork of this repository. If you want to contribute, more information are given in the [contribution guideline](https://github.com/bmichele/poetry_generation/blob/main/CONTRIBUTING.md).
 
