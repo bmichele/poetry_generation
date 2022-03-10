@@ -23,7 +23,9 @@ def get_tokenizer_and_model(model_config: ModelConfig):
         model_config.base_model,
         src_lang=LANGUAGE_CODES[model_config.lang],
         tgt_lang=LANGUAGE_CODES[model_config.lang],
-        additional_special_tokens=model_config.special_tokens if model_config.special_tokens else []
+        additional_special_tokens=model_config.special_tokens
+        if model_config.special_tokens
+        else [],
     )
 
     logging.info("Loading base model {}".format(model_config.base_model))
@@ -63,8 +65,8 @@ def generate(
             encoded,
             do_sample=True,
             max_length=generation_config.out_max_length,
-            temperature=5.,
-            top_k=5,
+            temperature=generation_config.temperature,
+            top_k=generation_config.top_k,
         )
     else:
         encoded = torch.tensor(encoded).unsqueeze(0).to(DEVICE)
@@ -75,7 +77,7 @@ def generate(
             max_length=generation_config.out_max_length,
             num_beams=generation_config.num_beams,
             # repetition_penalty=5.0,
-            # temperature=0.8,
+            temperature=generation_config.temperature,
             # no_repeat_ngram_size=2,
             early_stopping=generation_config.early_stopping,
             num_return_sequences=generation_config.num_return_sequences,
@@ -92,5 +94,11 @@ def generate(
     logging.info("Generated candidates {}".format(candidates))
 
     return PoemLineList(
-        [PoemLine(text=candidate) for candidate in filter_candidates(candidates)]
+        [
+            PoemLine(text=candidate)
+            for candidate in filter_candidates(
+                candidates,
+                remove_duplicates=generation_config.remove_duplicate_candidates,
+            )
+        ]
     )

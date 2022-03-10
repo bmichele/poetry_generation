@@ -24,20 +24,26 @@ class GenerationConfig:
         truncation: Optional[bool] = True,
         out_max_length: Optional[int] = 32,
         do_sample: Optional[bool] = True,
+        temperature: Optional[float] = 1.,
+        top_k: Optional[int] = 50,
         num_beams: Optional[int] = 5,
         batch_multiply: Optional[int] = None,
         early_stopping: Optional[bool] = False,
         num_return_sequences: Optional[int] = 5,
+        remove_duplicate_candidates: Optional[bool] = True,
     ):
         self.src_builder = src_builder
         self.src_max_length = src_max_length
         self.truncation = truncation
         self.out_max_length = out_max_length
         self.do_sample = do_sample
+        self.temperature = temperature
+        self.top_k = top_k
         self.num_beams = num_beams
         self.batch_multiply = batch_multiply
         self.early_stopping = early_stopping
         self.num_return_sequences = num_return_sequences
+        self.remove_duplicate_candidates = remove_duplicate_candidates
 
 
 class PoemGeneratorConfiguration:
