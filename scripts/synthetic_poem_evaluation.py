@@ -29,8 +29,8 @@ def poem_coherence_scores(
     *args,
     **kwargs,
 ) -> np.array:
-    """
-    Given a poem, computes all n-coherence scores up to the max n value given as argument
+    """Given a poem, computes all n-coherence scores up to the max n value given as argument
+
     :param poem:
     :param coherence_estimator:
     :param max_n:

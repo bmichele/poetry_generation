@@ -48,9 +48,9 @@ def get_tokenizer_and_model(model_config: ModelConfig):
 def generate(
     poem_state: PoemLineList, tokenizer, model, generation_config: GenerationConfig
 ) -> PoemLineList:
-    """
-    Implementation of next line poem generator using mbart for english language
-    :return:
+    """Generates line candidates
+
+    :return: list of line candidates
     """
     source = generation_config.src_builder(poem_state)
     encoded = tokenizer.encode(

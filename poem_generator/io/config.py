@@ -10,6 +10,13 @@ class ModelConfig:
         lang: str,
         special_tokens: Optional[List[str]] = None,
     ):
+        """Configuration of neural model to be used for generation of candidates
+
+        :param base_model: base model used for fine-tuning
+        :param model_file: checkpoint file of fine-tuned model
+        :param lang: language
+        :param special_tokens: special tokens added when fine-tuning the model
+        """
         self.base_model = base_model
         self.model_file = model_file
         self.lang = lang

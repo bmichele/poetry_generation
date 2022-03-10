@@ -5,9 +5,10 @@
 import logging
 import os
 import random
-from typing import Dict, List, Optional
-import matplotlib.pyplot as plt
+import warnings
+from typing import List, Optional
 
+import matplotlib.pyplot as plt
 import numpy as np
 import spacy
 from gensim import models
@@ -17,8 +18,6 @@ from quality_estimation.coherence_estimator import (
     SemanticCoherenceEstimator,
     SyntacticAnnotator,
 )
-
-import warnings
 
 warnings.simplefilter("error")
 

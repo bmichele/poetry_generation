@@ -1,12 +1,12 @@
 import json
 import logging
 import os
-from typing import Set, List
 import string
+from typing import Set
 
 import numpy as np
-from tqdm import tqdm
 from nltk.tokenize import word_tokenize
+from tqdm import tqdm
 
 logger = logging.getLogger("asdasdsad")
 logger.setLevel(level=logging.INFO)
