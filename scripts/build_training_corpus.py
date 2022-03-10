@@ -10,6 +10,9 @@ import logging
 from time import time
 # from tqdm import tqdm
 import pronouncing
+from gensim import models
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 RUN_ID = str(round(time() * 1000))
 logging.basicConfig(
@@ -23,8 +26,8 @@ random.seed(42)
 # DATA_DIR = os.environ["DATADIR_POETRY"]
 DATA_DIR = "/Users/miche/uniData/poetryGeneration"
 LANG = "en"
-OUT_DATASETS = ["single_line", "mul_lines", "mixed_lines", "rhyme"]
-# OUT_DATASETS = ["rhyme"]
+# OUT_DATASETS = ["single_line", "mul_lines", "mixed_lines", "rhyme", "keywords"]
+OUT_DATASETS = ["keywords"]
 
 
 def example_list_to_csv(examples: List[Tuple], columns: Tuple, filename: str):
@@ -360,8 +363,104 @@ if __name__ == "__main__":
         )
 
     ####################
-    # Synonyms Dataset #
+    # Keywords Dataset #
     ####################
+    if "keywords" in OUT_DATASETS:
+
+        logging.info("Building keywords dataset")
+        separator = " >>>SEP<<< "
+
+        out_examples = []
+        for i, line in enumerate(all_lines[:-1]):
+            if i % 100000 == 0:
+                logging.info("processing line {}".format(i))
+            next_line = all_lines[i + 1]
+            if next_line["gid"] == line["gid"]:
+                out_example = (i, line["gid"], line["s"], next_line["s"])
+                if check_string(out_example[2] + out_example[3]):
+                    out_examples.append(out_example)
+            else:
+                continue
+
+        # split train/test
+        logging.info("Splitting train/val data")
+        examples_train = []
+        examples_val = []
+        for out_example in out_examples:
+            if random.random() > 0.2:
+                examples_train.append(out_example)
+            else:
+                examples_val.append(out_example)
+
+        logging.info("Shuffling data")
+        random.shuffle(examples_train)
+        random.shuffle(examples_val)
+
+        logging.info("Adding keywords to train data")
+
+        model_dir = "/Users/miche/uniModels"
+        w2v = models.KeyedVectors.load_word2vec_format(
+            os.path.join(model_dir, "GoogleNews-vectors-negative300.bin"), binary=True
+        )
+        from gensim.similarities.annoy import AnnoyIndexer
+
+        if os.path.exists("annoy_index"):
+            logging.info("Loading annoy index")
+            annoy_index = AnnoyIndexer()
+            annoy_index.load("annoy_index")
+            annoy_index.model = w2v
+        else:
+            logging.info("Building annoy index")
+            annoy_index = AnnoyIndexer(w2v, 100)
+            annoy_index.save("annoy_index")
+
+        def find_related_words(poem_line: str, word2vec: models.keyedvectors.KeyedVectors, sample_k: int = None) -> List[str]:
+            tokens = [token for token in word_tokenize(poem_line) if token.lower() not in stopwords.words("english")]
+            tokens = [token for token in tokens if token in word2vec]
+            if tokens:
+                related = word2vec.most_similar(tokens, topn=10, indexer=annoy_index)
+                related = [word.replace("_", " ") for word, _ in related]
+                if sample_k:
+                    related = random.sample(related, sample_k)
+                return related
+            else:
+                return []
+
+        train_with_keywords = []
+        for i, example in enumerate(examples_train):
+            if i % 50000 == 0:
+                logging.info("processing line {}".format(i))
+            tgt_line = example[-1]
+            related_words = find_related_words(tgt_line, w2v, sample_k=2)
+
+            src = " ".join(related_words) + separator + example[-2]
+            train_with_keywords.append((example[0], example[1], src, tgt_line))
+        random.shuffle(train_with_keywords)
+
+        val_with_keywords = []
+        for i, example in enumerate(examples_val):
+            if i % 50000 == 0:
+                logging.info("processing line {}".format(i))
+            tgt_line = example[-1]
+            related_words = find_related_words(tgt_line, w2v, sample_k=2)
+
+            src = " ".join(related_words) + separator + example[-2]
+            val_with_keywords.append((example[0], example[1], src, tgt_line))
+        random.shuffle(val_with_keywords)
+
+        logging.info("Saving train data to file")
+        example_list_to_csv(
+            train_with_keywords,
+            ("id", "gutenberg_id", "line", "next_line"),
+            os.path.join(DATA_DIR, "data.{}.{}.train.csv".format(LANG, "keywords")),
+        )
+        logging.info("Saving val data to file")
+        example_list_to_csv(
+            val_with_keywords,
+            ("id", "gutenberg_id", "line", "next_line"),
+            os.path.join(DATA_DIR, "data.{}.{}.val.csv".format(LANG, "keywords")),
+        )
+
 
     ####################
     # Antonyms Dataset #
