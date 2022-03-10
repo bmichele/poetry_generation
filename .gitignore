@@ -4,3 +4,4 @@ __pycache__
 models/*
 !models/.keep
 *.log
+scripts/annoy_index*
