@@ -251,7 +251,11 @@ class SemanticCoherenceEstimator:
                 logger.debug("Vector not found for word '{}'".format(key))
         return vectors
 
-    def _n_similarity(self, ws1, ws2):
+    @staticmethod
+    def _vector_similarity(v1: np.array, v2: np.array) -> float:
+        return float(np.dot(matutils.unitvec(v1), matutils.unitvec(v2)))
+
+    def _n_similarity(self, ws1: List[str], ws2: List[str]) -> float:
         """This is a copy of the gensim.keyedvectors.n_similarity implementation with some small modifications
         Compute cosine similarity between two sets of keys.
 
@@ -275,24 +279,41 @@ class SemanticCoherenceEstimator:
         if not(len(v1) and len(v2)):
             return float("inf")
         else:
-            return np.dot(matutils.unitvec(np.array(v1).mean(axis=0)), matutils.unitvec(np.array(v2).mean(axis=0)))
+            # return np.dot(matutils.unitvec(np.array(v1).mean(axis=0)), matutils.unitvec(np.array(v2).mean(axis=0)))
+            return self._vector_similarity(np.array(v1).mean(axis=0), np.array(v2).mean(axis=0))
 
-    def predict(self, line1: str, line2: str, stopwords: bool = True, fast_tokenize: bool = True, remove_punct: bool = False):
+    def _line_words(self, line: str, stopwords: bool, fast_tokenize: bool, remove_punct: bool) -> List[str]:
         if remove_punct:
-            line1 = line1.translate(str.maketrans('', '', string.punctuation)).strip()
-            line2 = line2.translate(str.maketrans('', '', string.punctuation)).strip()
+            line = line.translate(str.maketrans('', '', string.punctuation)).strip()
         if not stopwords or not fast_tokenize:
             assert self.annotator is not None, "Annotator required to remove stopwords and proper accurate tokenization"
-            annotated_1 = self.annotator.annotate(line1)
-            annotated_2 = self.annotator.annotate(line2)
+            annotated_line = self.annotator.annotate(line)
             if not stopwords:
-                annotated_1 = [token for token in annotated_1 if not token.is_stop]
-                annotated_2 = [token for token in annotated_2 if not token.is_stop]
-            words_1 = [token.text for token in annotated_1]
-            words_2 = [token.text for token in annotated_2]
+                annotated_line = [token for token in annotated_line if not token.is_stop]
+            words = [token.text for token in annotated_line]
         else:
-            words_1 = line1.split()
-            words_2 = line2.split()
+            words = line.split()
+        return words
+
+    def predict(self,
+                line1: str,
+                line2: str,
+                stopwords: bool = True,
+                fast_tokenize: bool = True,
+                remove_punct: bool = False,
+                ):
+        words_1 = self._line_words(
+            line1,
+            stopwords=stopwords,
+            fast_tokenize=fast_tokenize,
+            remove_punct=remove_punct,
+        )
+        words_2 = self._line_words(
+            line2,
+            stopwords=stopwords,
+            fast_tokenize=fast_tokenize,
+            remove_punct=remove_punct
+        )
         if not (len(words_1) and len(words_2)):
             return float("inf")
         logger.debug("Computing self._n_similarity with word sets {} and {}".format(words_1, words_2))
