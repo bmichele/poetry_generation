@@ -229,6 +229,7 @@ if __name__ == "__main__":
         scores = [
             np.array([])
         ] * max_context_lines  # store here all the values for each order
+        all_poem_average_scores = []
         score_sums = np.zeros(max_context_lines)
         score_counts = np.zeros(max_context_lines)
         for poem in tqdm(poem_dataset):
@@ -241,12 +242,16 @@ if __name__ == "__main__":
                 fast_tokenize=fast_tokenize,
                 remove_punct=remove_punct,
             )
-            for i in range(poem_scores.shape[1]):
+            poem_average_scores = np.array([-100.] * poem_scores.shape[1])
+            for i in range(poem_scores.shape[1]):  # loop over columns (corresponds to order n)
                 poem_order_scores = poem_scores[:, i]
                 poem_order_scores = poem_order_scores[~np.isnan(poem_order_scores)]
+                if poem_order_scores.size != 0:
+                    poem_average_scores[i] = np.mean(poem_order_scores)
                 scores[i] = np.concatenate((scores[i], poem_order_scores))
                 score_sums[i] += poem_order_scores.sum()
                 score_counts[i] += poem_order_scores.size
+            all_poem_average_scores.append(poem_average_scores)
             # for i in range(1, len(poem_lines)):
             #     line_to_line_coherence = n_semantic_coherence(
             #         poem_lines[:i],
@@ -270,6 +275,7 @@ if __name__ == "__main__":
             "mean_n_coherence_values": average_scores,
             "example_counts": score_counts,
             "std": np.array([np.std(order_scores) for order_scores in scores]),
+            "measured_values": all_poem_average_scores
         }
 
     # final_results = {
