@@ -5,6 +5,8 @@ from random import sample
 
 import jsonlines
 import requests
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 from poem_generator.generator import PoemGenerator
 from poem_generator.io.candidates import PoemLine, PoemLineList
@@ -23,7 +25,7 @@ fh.setFormatter(fh_formatter)
 logger.addHandler(fh)
 
 DATADIR = os.path.join(os.environ["DATADIR_UNI"], "kaggle_poemsdataset/forms")
-POEMS_PER_MODEL = 1000
+POEMS_PER_MODEL = 10
 ITERATIONS_PER_POEM = 10
 # POEMS_PER_MODEL = 1
 # ITERATIONS_PER_POEM = 2
@@ -67,11 +69,14 @@ def src_builder_mul_lines(poem_state: PoemLineList) -> str:
     )
 
 
-# def src_builder_keywords(poem_state: PoemLineList) -> str:
-#     return (
-#         " >>>SEP<<< ".join(poem_line.text for poem_line in poem_state.to_list()[-3:])
-#         + " >>>SEP<<< "
-#     )
+def src_builder_keywords(poem_state: PoemLineList) -> str:
+    kwd_proxies = word_tokenize(poem_state[0].text)
+    kwd_proxies = [word for word in kwd_proxies if word.lower() not in stopwords.words("english")]
+    if kwd_proxies:
+        kwd_proxies = random.sample(kwd_proxies, min(3, len(kwd_proxies)))
+    out = " ".join(kwd_proxies) + " >>>SEP<<< " + poem_state[-1].text
+    logger.debug(out)
+    return out
 
 
 if __name__ == "__main__":
@@ -97,98 +102,106 @@ if __name__ == "__main__":
     ##############################
 
     configs = {
-        "mbart_en_gut_next_line_90000": PoemGeneratorConfiguration(
+        "mbart_en_gut_next_line_60000": PoemGeneratorConfiguration(
             next_line_model_config=ModelConfig(
                 base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_next_line/checkpoint-90000/pytorch_model.bin",
+                model_file="models/mbart_en_gut_next_line/checkpoint-60000/pytorch_model.bin",
                 lang="en",
             ),
             generation_config=GenerationConfig(
                 src_builder=lambda poem_state: poem_state[-1].text,
                 batch_multiply=10,
+                remove_duplicate_candidates=False,
             ),
         ),
-        "mbart_en_gut_rhyme_90000": PoemGeneratorConfiguration(
+        "mbart_en_gut_mixed_lines_60000": PoemGeneratorConfiguration(
             next_line_model_config=ModelConfig(
                 base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_rhyme/checkpoint-90000/pytorch_model.bin",
-                lang="en",
-                special_tokens=[">>>SEP<<<"],
-            ),
-            generation_config=GenerationConfig(
-                src_builder=src_builder_rhyme,
-                batch_multiply=10,
-            ),
-        ),
-        "mbart_en_gut_mul_lines_90000": PoemGeneratorConfiguration(
-            next_line_model_config=ModelConfig(
-                base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_mul_lines/checkpoint-90000/pytorch_model.bin",
-                lang="en",
-                special_tokens=[">>>SEP<<<"],
-            ),
-            generation_config=GenerationConfig(
-                src_builder=src_builder_mul_lines,
-                batch_multiply=10,
-            ),
-        ),
-        "mbart_en_gut_mixed_lines_90000": PoemGeneratorConfiguration(
-            next_line_model_config=ModelConfig(
-                base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_mixed_lines/checkpoint-90000/pytorch_model.bin",
+                model_file="models/mbart_en_gut_mixed_lines/checkpoint-60000/pytorch_model.bin",
                 lang="en",
             ),
             generation_config=GenerationConfig(
                 src_builder=lambda poem_state: poem_state[-1].text,
                 batch_multiply=10,
+                remove_duplicate_candidates=False,
             ),
         ),
-        "mbart_en_gut_next_line_45000": PoemGeneratorConfiguration(
+        "mbart_en_gut_mul_lines_60000": PoemGeneratorConfiguration(
             next_line_model_config=ModelConfig(
                 base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_next_line/checkpoint-45000/pytorch_model.bin",
-                lang="en",
-            ),
-            generation_config=GenerationConfig(
-                src_builder=lambda poem_state: poem_state[-1].text,
-                batch_multiply=10,
-            ),
-        ),
-        "mbart_en_gut_rhyme_45000": PoemGeneratorConfiguration(
-            next_line_model_config=ModelConfig(
-                base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_rhyme/checkpoint-45000/pytorch_model.bin",
-                lang="en",
-                special_tokens=[">>>SEP<<<"],
-            ),
-            generation_config=GenerationConfig(
-                src_builder=src_builder_rhyme,
-                batch_multiply=10,
-            ),
-        ),
-        "mbart_en_gut_mul_lines_45000": PoemGeneratorConfiguration(
-            next_line_model_config=ModelConfig(
-                base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_mul_lines/checkpoint-45000/pytorch_model.bin",
+                model_file="models/mbart_en_gut_mul_lines/checkpoint-60000/pytorch_model.bin",
                 lang="en",
                 special_tokens=[">>>SEP<<<"],
             ),
             generation_config=GenerationConfig(
                 src_builder=src_builder_mul_lines,
                 batch_multiply=10,
+                remove_duplicate_candidates=False,
             ),
         ),
-        "mbart_en_gut_mixed_lines_45000": PoemGeneratorConfiguration(
+        "mbart_en_gut_keywords_60000": PoemGeneratorConfiguration(
             next_line_model_config=ModelConfig(
                 base_model="facebook/mbart-large-cc25",
-                model_file="models/mbart_en_gut_mixed_lines/checkpoint-45000/pytorch_model.bin",
+                model_file="models/mbart_en_gut_keywords/checkpoint-60000/pytorch_model.bin",
                 lang="en",
+                special_tokens=[">>>SEP<<<"],
             ),
             generation_config=GenerationConfig(
-                src_builder=lambda poem_state: poem_state[-1].text,
+                src_builder=src_builder_keywords,
                 batch_multiply=10,
+                remove_duplicate_candidates=False,
             ),
         ),
+        "mbart_en_gut_rhyme_60000": PoemGeneratorConfiguration(
+            next_line_model_config=ModelConfig(
+                base_model="facebook/mbart-large-cc25",
+                model_file="models/mbart_en_gut_rhyme/checkpoint-60000/pytorch_model.bin",
+                lang="en",
+                special_tokens=[">>>SEP<<<"],
+            ),
+            generation_config=GenerationConfig(
+                src_builder=src_builder_rhyme,
+                batch_multiply=10,
+                remove_duplicate_candidates=False,
+            ),
+        ),
+        # "mbart_en_gut_next_line_75000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_next_line/checkpoint-75000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mixed_lines_75000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mixed_lines/checkpoint-75000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mul_lines_75000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mul_lines/checkpoint-75000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_mul_lines,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
         # "mbart_en_gut_keywords_75000": PoemGeneratorConfiguration(
         #     next_line_model_config=ModelConfig(
         #         base_model="facebook/mbart-large-cc25",
@@ -199,6 +212,209 @@ if __name__ == "__main__":
         #     generation_config=GenerationConfig(
         #         src_builder=src_builder_keywords,
         #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_rhyme_75000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_rhyme/checkpoint-75000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_rhyme,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_next_line_30000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_next_line/checkpoint-30000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mixed_lines_30000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mixed_lines/checkpoint-30000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mul_lines_30000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mul_lines/checkpoint-30000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_mul_lines,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_keywords_30000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_keywords/checkpoint-30000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_keywords,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_rhyme_30000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_rhyme/checkpoint-30000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_rhyme,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_next_line_45000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_next_line/checkpoint-45000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mixed_lines_45000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mixed_lines/checkpoint-45000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mul_lines_45000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mul_lines/checkpoint-45000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_mul_lines,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_keywords_45000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_keywords/checkpoint-45000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_keywords,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_rhyme_45000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_rhyme/checkpoint-45000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_rhyme,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_next_line_15000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_next_line/checkpoint-15000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mixed_lines_15000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mixed_lines/checkpoint-15000/pytorch_model.bin",
+        #         lang="en",
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=lambda poem_state: poem_state[-1].text,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_mul_lines_15000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_mul_lines/checkpoint-15000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_mul_lines,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_keywords_15000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_keywords/checkpoint-15000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_keywords,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
+        #     ),
+        # ),
+        # "mbart_en_gut_rhyme_15000": PoemGeneratorConfiguration(
+        #     next_line_model_config=ModelConfig(
+        #         base_model="facebook/mbart-large-cc25",
+        #         model_file="models/mbart_en_gut_rhyme/checkpoint-15000/pytorch_model.bin",
+        #         lang="en",
+        #         special_tokens=[">>>SEP<<<"],
+        #     ),
+        #     generation_config=GenerationConfig(
+        #         src_builder=src_builder_rhyme,
+        #         batch_multiply=10,
+        #         remove_duplicate_candidates=False,
         #     ),
         # ),
     }
@@ -211,7 +427,7 @@ if __name__ == "__main__":
         f = open(out_file, "w")
         writer = jsonlines.Writer(f)
         for poem_id in range(POEMS_PER_MODEL):
-            if poem_id % 100 == 0 and poem_id != 0:
+            if poem_id % 20 == 0 and poem_id != 0:
                 logger.info("{} - Saving to file".format(poem_id))
                 writer.close()
                 f.close()
@@ -223,6 +439,10 @@ if __name__ == "__main__":
             generator.add_line(PoemLine(random_first_line))
             for i in range(ITERATIONS_PER_POEM):
                 candidates = generator.get_line_candidates()
+                unique_candidates = list(set(candidate.text for candidate in candidates))
+                logger.debug("Total candidates {}".format(len(candidates)))
+                logger.debug("Unique candidates {}".format(len(unique_candidates)))
+                unique_candidates = PoemLineList([PoemLine(candidate) for candidate in unique_candidates])
                 writer.write(
                     {
                         "id": poem_id,
@@ -235,7 +455,7 @@ if __name__ == "__main__":
                 if not candidates:
                     logger.info("poem_id={}, iteration={} - no candidates found".format(poem_id, i))
                     break
-                random_selection = sample(candidates.to_list(), 1)[0]
+                random_selection = sample(unique_candidates.to_list(), 1)[0]
                 generator.add_line(random_selection)
 
         writer.close()
