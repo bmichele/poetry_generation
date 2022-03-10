@@ -29,16 +29,7 @@ def poem_coherence_scores(
     *args,
     **kwargs,
 ) -> np.array:
-    """
-    Given a poem, computes all n-coherence scores up to the max n value given as argument
-
-    :param poem:
-    :param coherence_estimator:
-    :param max_n:
-    :param args:
-    :param kwargs:
-    :return:
-    """
+    """Given a poem, computes all n-coherence scores up to the max n value given as argument."""
     # convert all poem lines into vectors
     lines_as_word_seq = [
         coherence_estimator._line_words(line, *args, **kwargs) for line in poem

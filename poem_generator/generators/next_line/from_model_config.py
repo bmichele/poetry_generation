@@ -48,8 +48,7 @@ def get_tokenizer_and_model(model_config: ModelConfig):
 def generate(
     poem_state: PoemLineList, tokenizer, model, generation_config: GenerationConfig
 ) -> PoemLineList:
-    """
-    Generates line candidates
+    """Generates line candidates.
 
     :return: list of line candidates
     """
