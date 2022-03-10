@@ -10,7 +10,8 @@ class ModelConfig:
         lang: str,
         special_tokens: Optional[List[str]] = None,
     ):
-        """Configuration of neural model to be used for generation of candidates
+        """
+        Configuration of neural model to be used for generation of candidates
 
         :param base_model: base model used for fine-tuning
         :param model_file: checkpoint file of fine-tuned model
@@ -39,6 +40,22 @@ class GenerationConfig:
         num_return_sequences: Optional[int] = 5,
         remove_duplicate_candidates: Optional[bool] = True,
     ):
+        """
+        Configuration for candidate generation
+
+        :param src_builder: Function used to obtain the seq2seq model source from the poem state
+        :param src_max_length: Max source langth supported by the model
+        :param truncation:
+        :param out_max_length:
+        :param do_sample:
+        :param temperature:
+        :param top_k:
+        :param num_beams:
+        :param batch_multiply:
+        :param early_stopping:
+        :param num_return_sequences:
+        :param remove_duplicate_candidates:
+        """
         self.src_builder = src_builder
         self.src_max_length = src_max_length
         self.truncation = truncation
