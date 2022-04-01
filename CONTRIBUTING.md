@@ -25,4 +25,6 @@ If in doubt, you can use as a template the implementation of `poem_generator.gen
 
 ### Adding Model Weights
 
-Model weights are stored in the `models` directory, and are not uploaded to the repository. Instead, the model must be uploaded to a cloud storage and the link must be provided in the README file (in the table under the Available Models section).
+We store models in Model in [huggingface model hub](https://huggingface.co/models).
+When adding a new model, you should upload your model there and modify the `models/get_models.sh` to allow users
+downloading the weights of the new model. 

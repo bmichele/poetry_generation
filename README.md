@@ -13,9 +13,14 @@ $ git clone https://github.com/bmichele/poetry_generation.git
 $ cd poetry_generation/
 $ pip install -r requirements.txt
 ```
+Second, download the fine-tuned models as follows:
+```shell
+$ cd models
+$ bash get_models.sh
+$ cd ..
+```
 
 At this point, you can use the `generator` class to generate a poem as follows.  
-IMPORTANT: the fine-tuned models must be downloaded and placed in the `models` directory before running the code! Links to download the available models are given in the next section.  
 Disclaimer: the generator might not be able to write down the Kalevala :sweat_smile:
 ```shell
 $ python
@@ -58,13 +63,6 @@ A simple command-line utilities to generate poems can be found in `example.py`. 
 python example.py
 ```
 Then you can just follow the instructions from the prompt!
-
-## Available Models
-
-| Base Model                | Training Data | Language | Download Link |
-|---------------------------|---------------|----------|------|
-| [facebook/mbart-large-cc25](https://huggingface.co/facebook/mbart-large-cc25) | wikisource    | finnish  | [wikisource-fi-mbart.pytorch_model.bin](https://drive.google.com/file/d/1W6tDai7Fh42622UJIk6TsWI0uMBlcPX4/view?usp=sharing) |
-| [facebook/mbart-large-cc25](https://huggingface.co/facebook/mbart-large-cc25) | gutenberg, wikisource    | finnish  | [mbart-finnish-capitalized-20-epochs.tar.gz](https://helsinkifi-my.sharepoint.com/:u:/g/personal/sivanova_ad_helsinki_fi/EWlOm8lwnTNLgAjzsCkOdYIBNMp9zq7ODHNkwAQ215T6Zg?e=ve95Vz) |
 
 ## Repository Files and Folders
 
