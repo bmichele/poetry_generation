@@ -1,3 +1,4 @@
+#!/bin/bash
 # Downloads the models and store them in the `models` folder
 
 #git lfs install
