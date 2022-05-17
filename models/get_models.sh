@@ -8,7 +8,15 @@
 ##################
 
 # First line
-#TODO: add first line model for english
+if [ ! -d poetry-generation-firstline-mbart-ws-en-sorted ]; then
+    #git clone https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted
+    mkdir poetry-generation-firstline-mbart-ws-en-sorted
+    (
+    cd poetry-generation-firstline-mbart-ws-en-sorted || exit
+    wget https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted/resolve/main/pytorch_model.bin
+    cd ..
+    )
+fi
 
 # Next line
 if [ ! -d poetry-generation-nextline-mbart-gut-en-single ]; then

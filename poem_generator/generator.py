@@ -2,6 +2,7 @@ from poem_generator.generators.next_line import mbart_fi_single_line
 from poem_generator.generators.next_line import mbart_en_single_line
 from poem_generator.generators.next_line import from_model_config
 from poem_generator.generators.first_line import mbart_fi_first_line
+from poem_generator.generators.first_line import mbart_en_first_line
 from poem_generator.io.candidates import PoemLine, PoemLineList
 from poem_generator.io.config import PoemGeneratorConfiguration
 
@@ -38,8 +39,7 @@ class PoemGenerator:
         if self.config.lang == "fi":
             return mbart_fi_first_line.generate(keywords, self.tokenizer, self.first_line_model)
         elif self.config.lang == "en":
-            # TODO: add here first line generation with english model once it is uploaded
-            raise NotImplementedError
+            return mbart_en_first_line.generate(keywords, self.tokenizer, self.first_line_model)
         else:
             raise NotImplementedError
 
