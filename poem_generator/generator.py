@@ -32,6 +32,8 @@ class PoemGenerator:
         else:
             if self.config.lang == "fi":
                 return mbart_fi_first_line.get_model()
+            elif self.config.lang == "en":
+                return mbart_en_first_line.get_model()
             else:
                 raise NotImplementedError
 
