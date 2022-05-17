@@ -4,6 +4,25 @@
 #git lfs install
 
 ##################
+# English models #
+##################
+
+# First line
+#TODO: add first line model for english
+
+# Next line
+if [ ! -d poetry-generation-nextline-mbart-gut-en-single ]; then
+    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single
+    mkdir poetry-generation-nextline-mbart-gut-en-single
+    (
+    cd poetry-generation-nextline-mbart-gut-en-single || exit
+    wget https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single/resolve/main/pytorch_model.bin
+    cd ..
+    )
+fi
+
+
+##################
 # Finnish models #
 ##################
 
