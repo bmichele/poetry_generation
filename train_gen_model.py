@@ -50,7 +50,9 @@ if __name__ == "__main__":
     ####################################################################################################################
 
     logging.info("Reading config file {}".format(args.config_file))
-    config = configparser.ConfigParser(os.environ, interpolation=configparser.ExtendedInterpolation())
+    config = configparser.ConfigParser(
+        os.environ, interpolation=configparser.ExtendedInterpolation()
+    )
     config.read(args.config_file)
 
     config_section_general = "General"
@@ -74,7 +76,9 @@ if __name__ == "__main__":
     DATA_VAL = config[config_section_data_specs]["data_validation"]
     COLUMN_SRC = config[config_section_data_specs]["data_column_name_src"]
     COLUMN_TRG = config[config_section_data_specs]["data_column_name_trg"]
-    SPECIAL_TOKENS = ast.literal_eval(config[config_section_data_specs]["special_tokens"])
+    SPECIAL_TOKENS = ast.literal_eval(
+        config[config_section_data_specs]["special_tokens"]
+    )
 
     config_section_training_args = "Training Args"
     EPOCHS = int(config[config_section_training_args]["epochs"])
@@ -158,11 +162,7 @@ if __name__ == "__main__":
         )
         model = BartForConditionalGeneration.from_pretrained(MODEL)
     elif MODEL == "facebook/mbart-large-50":
-        language_codes = {
-            "en": "en_XX",
-            "fi": "fi_FI",
-            "sv": "sv_SE"
-        }
+        language_codes = {"en": "en_XX", "fi": "fi_FI", "sv": "sv_SE"}
         tokenizer = MBart50TokenizerFast.from_pretrained(
             MODEL,
             src_lang=language_codes[LANGUAGE],
@@ -179,7 +179,9 @@ if __name__ == "__main__":
 
     logging.info("Pre-trained model vocab size: {}".format(model.config.vocab_size))
     model.resize_token_embeddings(len(tokenizer))
-    logging.info("Vocab size after adding special tokens: {}".format(model.config.vocab_size))
+    logging.info(
+        "Vocab size after adding special tokens: {}".format(model.config.vocab_size)
+    )
 
     ####################################################################################################################
     # Load data from csv file
@@ -187,7 +189,9 @@ if __name__ == "__main__":
 
     logging.info("loading data")
     dataset = load_dataset(
-        "csv", data_files={"train": DATA_TRAIN, "validation": DATA_VAL}, delimiter=",",
+        "csv",
+        data_files={"train": DATA_TRAIN, "validation": DATA_VAL},
+        delimiter=",",
     )
     if DEBUG:
         dataset["train"] = dataset["train"].select(range(100000))
@@ -195,12 +199,16 @@ if __name__ == "__main__":
 
     if CHECK_MAX_SEQ_LEN:
         # find max sequence length after tokenizing
-        logging.info("determining length of tokenized sequences (sample 100000 and 25000 examples from train and val)")
+        logging.info(
+            "determining length of tokenized sequences (sample 100000 and 25000 examples from train and val)"
+        )
         sequence_lengths_X = [
-            len(tokenizer.tokenize(example[COLUMN_SRC])) for example in dataset["train"].select(range(100000))
+            len(tokenizer.tokenize(example[COLUMN_SRC]))
+            for example in dataset["train"].select(range(100000))
         ]
         sequence_lengths_y = [
-            len(tokenizer.tokenize(example[COLUMN_TRG])) for example in dataset["train"].select(range(25000))
+            len(tokenizer.tokenize(example[COLUMN_TRG]))
+            for example in dataset["train"].select(range(25000))
         ]
 
         logging.info("Average lengths")
@@ -248,7 +256,9 @@ if __name__ == "__main__":
 
         logging.info("converting text to features")
         dataset["train"] = dataset["train"].map(convert_to_features, batched=True)
-        dataset["validation"] = dataset["validation"].map(convert_to_features, batched=True)
+        dataset["validation"] = dataset["validation"].map(
+            convert_to_features, batched=True
+        )
 
         columns = [
             "input_ids",

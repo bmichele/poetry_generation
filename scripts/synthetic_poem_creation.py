@@ -71,7 +71,9 @@ def src_builder_mul_lines(poem_state: PoemLineList) -> str:
 
 def src_builder_keywords(poem_state: PoemLineList) -> str:
     kwd_proxies = word_tokenize(poem_state[0].text)
-    kwd_proxies = [word for word in kwd_proxies if word.lower() not in stopwords.words("english")]
+    kwd_proxies = [
+        word for word in kwd_proxies if word.lower() not in stopwords.words("english")
+    ]
     if kwd_proxies:
         kwd_proxies = random.sample(kwd_proxies, min(3, len(kwd_proxies)))
     out = " ".join(kwd_proxies) + " >>>SEP<<< " + poem_state[-1].text
@@ -439,10 +441,14 @@ if __name__ == "__main__":
             generator.add_line(PoemLine(random_first_line))
             for i in range(ITERATIONS_PER_POEM):
                 candidates = generator.get_line_candidates()
-                unique_candidates = list(set(candidate.text for candidate in candidates))
+                unique_candidates = list(
+                    set(candidate.text for candidate in candidates)
+                )
                 logger.debug("Total candidates {}".format(len(candidates)))
                 logger.debug("Unique candidates {}".format(len(unique_candidates)))
-                unique_candidates = PoemLineList([PoemLine(candidate) for candidate in unique_candidates])
+                unique_candidates = PoemLineList(
+                    [PoemLine(candidate) for candidate in unique_candidates]
+                )
                 writer.write(
                     {
                         "id": poem_id,
@@ -453,7 +459,11 @@ if __name__ == "__main__":
                     }
                 )
                 if not candidates:
-                    logger.info("poem_id={}, iteration={} - no candidates found".format(poem_id, i))
+                    logger.info(
+                        "poem_id={}, iteration={} - no candidates found".format(
+                            poem_id, i
+                        )
+                    )
                     break
                 random_selection = sample(unique_candidates.to_list(), 1)[0]
                 generator.add_line(random_selection)

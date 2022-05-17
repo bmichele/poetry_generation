@@ -26,6 +26,7 @@ def get_tokenizer():
 
     return tokenizer
 
+
 def get_model():
     tokenizer = MBartTokenizer.from_pretrained(
         BASE_MODEL,
@@ -44,6 +45,7 @@ def get_model():
 
     return model
 
+
 def generate(keywords, tokenizer, model) -> PoemLineList:
     """
     Implementation of the first line poem generator using mbart for Finnish language
@@ -59,7 +61,7 @@ def generate(keywords, tokenizer, model) -> PoemLineList:
         encoded,
         do_sample=True,
         max_length=16,
-        temperature=5.,
+        temperature=5.0,
         top_k=5,
     )
 

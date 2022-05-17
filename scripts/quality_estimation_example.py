@@ -1,11 +1,13 @@
+import logging
+import os
+import random
+
 import numpy as np
 import spacy
-from quality_estimation.coherence_estimator import SyntacticCoherenceEstimator
-from quality_estimation.coherence_estimator import SyntacticAnnotator
-import os
-import logging
-import random
 from tqdm import tqdm
+
+from quality_estimation.coherence_estimator import SyntacticAnnotator
+from quality_estimation.coherence_estimator import SyntacticCoherenceEstimator
 
 logging.basicConfig(level=logging.INFO)
 
@@ -24,9 +26,11 @@ DATADIR = os.path.join(os.environ["DATADIR_UNI"], "kaggle_poemsdataset/forms")
 # let's use the italia sonnets to begin with
 # load the data
 poems = []
-for category in [dir for dir in os.listdir(os.path.join(DATADIR)) if dir != ".DS_Store"]:
-# for category in ["italian-sonnet", "pastoral", "cinquain"]:
-# for category in ["italian-sonnet"]:
+for category in [
+    dir for dir in os.listdir(os.path.join(DATADIR)) if dir != ".DS_Store"
+]:
+    # for category in ["italian-sonnet", "pastoral", "cinquain"]:
+    # for category in ["italian-sonnet"]:
     for file in os.listdir(os.path.join(DATADIR, category)):
         file_path = os.path.join(DATADIR, category, file)
         with open(file_path, "r") as f:
@@ -70,29 +74,41 @@ max_ngram_prediction = 10
 predictions = []
 for i, poem in enumerate(train_poems):
     try:
-        prediction = estimator.predict(poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction)
+        prediction = estimator.predict(
+            poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction
+        )
         predictions.append(prediction)
     except KeyError:
         logging.debug("Prediction failed for poem index {}".format(i))
 average_log_probability = np.mean(predictions)
 variance = np.var(predictions)
-logging.info("train set: average log prob {} {} ({} poems)".format(average_log_probability, variance, len(predictions)))
+logging.info(
+    "train set: average log prob {} {} ({} poems)".format(
+        average_log_probability, variance, len(predictions)
+    )
+)
 
 
 predictions = []
 for i, poem in tqdm(enumerate(test_poems)):
     try:
-        prediction = estimator.predict(poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction)
+        prediction = estimator.predict(
+            poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction
+        )
         predictions.append(prediction)
     except:
         logging.debug("Prediction failed for poem index {}".format(i))
 average_log_probability = np.mean(predictions)
 variance = np.var(predictions)
-logging.info("test set: average log prob {} {} ({} poems)".format(average_log_probability, variance, len(predictions)))
+logging.info(
+    "test set: average log prob {} {} ({} poems)".format(
+        average_log_probability, variance, len(predictions)
+    )
+)
 
 
 # shuffle lines in the poems
-def shuffle_lines(poem: str)-> str:
+def shuffle_lines(poem: str) -> str:
     poem_lines = poem.split("\n")
     random.shuffle(poem_lines)
     return "\n".join(poem_lines)
@@ -103,13 +119,19 @@ shuffled_poems = [shuffle_lines(poem) for poem in test_poems]
 predictions = []
 for i, poem in tqdm(enumerate(shuffled_poems)):
     try:
-        prediction = estimator.predict(poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction)
+        prediction = estimator.predict(
+            poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction
+        )
         predictions.append(prediction)
     except:
         logging.debug("Prediction failed for poem index {}".format(i))
 average_log_probability = np.mean(predictions)
 variance = np.var(predictions)
-logging.info("shuffled lines: average log prob {} {} ({} poems)".format(average_log_probability, variance, len(predictions)))
+logging.info(
+    "shuffled lines: average log prob {} {} ({} poems)".format(
+        average_log_probability, variance, len(predictions)
+    )
+)
 
 
 # shuffle poems by mixing lines from different poems
@@ -124,13 +146,19 @@ for length in poem_lengths:
 predictions = []
 for i, poem in tqdm(enumerate(mixed_poems)):
     try:
-        prediction = estimator.predict(poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction)
+        prediction = estimator.predict(
+            poem, stopwords=keep_stopwords, max_ngram=max_ngram_prediction
+        )
         predictions.append(prediction)
     except:
         logging.debug("Prediction failed for poem index {}".format(i))
 average_log_probability = np.mean(predictions)
 variance = np.var(predictions)
-logging.info("mixed lines: average log prob {} {} ({} poems)".format(average_log_probability, variance, len(predictions)))
+logging.info(
+    "mixed lines: average log prob {} {} ({} poems)".format(
+        average_log_probability, variance, len(predictions)
+    )
+)
 
 # for grid in estimator.grids:
 #     print(grid.array.transpose())

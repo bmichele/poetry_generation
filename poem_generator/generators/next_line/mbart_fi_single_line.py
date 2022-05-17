@@ -51,7 +51,7 @@ def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:
         encoded,
         do_sample=True,
         max_length=16,
-        temperature=5.,
+        temperature=5.0,
         top_k=5,
     )
 

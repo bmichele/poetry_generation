@@ -3,11 +3,12 @@
 import csv
 import gzip
 import json
+import logging
 import os
 import random
-from typing import List, Tuple
-import logging
 from time import time
+from typing import List, Tuple
+
 # from tqdm import tqdm
 import pronouncing
 from gensim import models
@@ -47,7 +48,9 @@ def check_string(text: str) -> bool:
     return True
 
 
-def multiline_examples_from_poem(poem: List[str], window: int, sep_token: str) -> List[Tuple[str, str]]:
+def multiline_examples_from_poem(
+    poem: List[str], window: int, sep_token: str
+) -> List[Tuple[str, str]]:
     examples = []
     line_count = len(poem)
     i = 0
@@ -58,18 +61,20 @@ def multiline_examples_from_poem(poem: List[str], window: int, sep_token: str) -
         examples.append(example)
     while i < line_count - 1:
         i += 1
-        src = sep_token.join(poem[i - window: i]) + sep_token
+        src = sep_token.join(poem[i - window : i]) + sep_token
         tgt = poem[i]
         example = (src, tgt)
         examples.append(example)
     return examples
 
 
-def multiline_examples_from_split_poem(poem: List[str], max_poem_length: int, window: int, sep_token: str) -> List[List[Tuple[str, str]]]:
+def multiline_examples_from_split_poem(
+    poem: List[str], max_poem_length: int, window: int, sep_token: str
+) -> List[List[Tuple[str, str]]]:
     examples = []
     if len(poem) > max_poem_length:
         for i in range(0, len(poem), max_poem_length):
-            poem_split = poem[i: i + max_poem_length]
+            poem_split = poem[i : i + max_poem_length]
             examples.append(multiline_examples_from_poem(poem_split, window, sep_token))
     else:
         examples.append(multiline_examples_from_poem(poem, window, sep_token))
@@ -170,13 +175,15 @@ if __name__ == "__main__":
         examples_train = []
         logging.info("Processing {} gutenberg ids".format(len(gutenberg_ids)))
         for gutenberg_id in gutenberg_ids:
-            poem_lines = [line for g_id, line in all_lines_with_id if g_id == gutenberg_id]
+            poem_lines = [
+                line for g_id, line in all_lines_with_id if g_id == gutenberg_id
+            ]
 
             poem_examples = multiline_examples_from_split_poem(
                 poem=poem_lines,
                 window=window_size,
                 max_poem_length=max_length,
-                sep_token=separator
+                sep_token=separator,
             )
             examples_train += poem_examples
         # shuffle examples
@@ -204,13 +211,15 @@ if __name__ == "__main__":
         examples_val = []
         logging.info("Processing {} gutenberg ids".format(len(gutenberg_ids)))
         for gutenberg_id in gutenberg_ids:
-            poem_lines = [line for g_id, line in all_lines_with_id if g_id == gutenberg_id]
+            poem_lines = [
+                line for g_id, line in all_lines_with_id if g_id == gutenberg_id
+            ]
 
             poem_examples = multiline_examples_from_split_poem(
                 poem=poem_lines,
                 window=window_size,
                 max_poem_length=max_length,
-                sep_token=separator
+                sep_token=separator,
             )
             examples_val += poem_examples
         # shuffle examples
@@ -316,7 +325,6 @@ if __name__ == "__main__":
             ending_token = poem_line.split()[-1]
             return pronouncing.rhymes(ending_token)
 
-
         train_with_rhymes = []
         for i, example in enumerate(examples_train):
             if i % 100000 == 0:
@@ -346,8 +354,6 @@ if __name__ == "__main__":
                     src = rhyme + separator + example[-2]
                     val_with_rhymes.append((example[0], example[1], src, tgt_line))
         random.shuffle(val_with_rhymes)
-
-
 
         logging.info("Saving train data to file")
         example_list_to_csv(
@@ -414,8 +420,16 @@ if __name__ == "__main__":
             annoy_index = AnnoyIndexer(w2v, 100)
             annoy_index.save("annoy_index")
 
-        def find_related_words(poem_line: str, word2vec: models.keyedvectors.KeyedVectors, sample_k: int = None) -> List[str]:
-            tokens = [token for token in word_tokenize(poem_line) if token.lower() not in stopwords.words("english")]
+        def find_related_words(
+            poem_line: str,
+            word2vec: models.keyedvectors.KeyedVectors,
+            sample_k: int = None,
+        ) -> List[str]:
+            tokens = [
+                token
+                for token in word_tokenize(poem_line)
+                if token.lower() not in stopwords.words("english")
+            ]
             tokens = [token for token in tokens if token in word2vec]
             if tokens:
                 related = word2vec.most_similar(tokens, topn=10, indexer=annoy_index)
@@ -460,7 +474,6 @@ if __name__ == "__main__":
             ("id", "gutenberg_id", "line", "next_line"),
             os.path.join(DATA_DIR, "data.{}.{}.val.csv".format(LANG, "keywords")),
         )
-
 
     ####################
     # Antonyms Dataset #

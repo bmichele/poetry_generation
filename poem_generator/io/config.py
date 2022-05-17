@@ -1,4 +1,5 @@
 from typing import Callable, List, Optional
+
 from poem_generator.io.candidates import PoemLineList
 
 
@@ -32,7 +33,7 @@ class GenerationConfig:
         truncation: Optional[bool] = True,
         out_max_length: Optional[int] = 32,
         do_sample: Optional[bool] = True,
-        temperature: Optional[float] = 1.,
+        temperature: Optional[float] = 1.0,
         top_k: Optional[int] = 50,
         num_beams: Optional[int] = 5,
         batch_multiply: Optional[int] = None,

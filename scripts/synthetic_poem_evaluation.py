@@ -9,7 +9,10 @@ import spacy
 from gensim import models
 from tqdm import tqdm
 
-from quality_estimation.coherence_estimator import SemanticCoherenceEstimator, SyntacticAnnotator
+from quality_estimation.coherence_estimator import (
+    SemanticCoherenceEstimator,
+    SyntacticAnnotator,
+)
 
 logger = logging.getLogger("metric_validation")
 logger.setLevel(level=logging.INFO)
@@ -120,7 +123,11 @@ if __name__ == "__main__":
         poem_ids = set(data_line["id"] for data_line in data)
         poems = []
         for poem_identifier in poem_ids:
-            final_poem = [data_line["poem_state"] for data_line in data if data_line["id"] == poem_identifier][-1]
+            final_poem = [
+                data_line["poem_state"]
+                for data_line in data
+                if data_line["id"] == poem_identifier
+            ][-1]
             poems.append(final_poem)
 
         # logger.info("Processing {} dataset".format(poem_dataset_name))
@@ -158,38 +165,47 @@ if __name__ == "__main__":
             "std": np.array([np.std(order_scores) for order_scores in scores]),
         }
 
-
     ns = np.arange(1, 6)
 
     training_steps = 75000
 
     plt.plot(
         ns,
-        results["mbart_en_gut_keywords_{}.jsonl".format(training_steps)]["mean_n_coherence_values"],
+        results["mbart_en_gut_keywords_{}.jsonl".format(training_steps)][
+            "mean_n_coherence_values"
+        ],
         "g^",
         label="NL-Keywords",
     )
     plt.plot(
         ns,
-        results["mbart_en_gut_next_line_{}.jsonl".format(training_steps)]["mean_n_coherence_values"],
+        results["mbart_en_gut_next_line_{}.jsonl".format(training_steps)][
+            "mean_n_coherence_values"
+        ],
         "mo",
         label="NL-Single",
     )
     plt.plot(
         ns,
-        results["mbart_en_gut_mul_lines_{}.jsonl".format(training_steps)]["mean_n_coherence_values"],
+        results["mbart_en_gut_mul_lines_{}.jsonl".format(training_steps)][
+            "mean_n_coherence_values"
+        ],
         "kd",
         label="NL-Multi",
     )
     plt.plot(
         ns,
-        results["mbart_en_gut_rhyme_{}.jsonl".format(training_steps)]["mean_n_coherence_values"],
+        results["mbart_en_gut_rhyme_{}.jsonl".format(training_steps)][
+            "mean_n_coherence_values"
+        ],
         "rs",
         label="NL-Rhyme",
     )
     plt.plot(
         ns,
-        results["mbart_en_gut_mixed_lines_{}.jsonl".format(training_steps)]["mean_n_coherence_values"],
+        results["mbart_en_gut_mixed_lines_{}.jsonl".format(training_steps)][
+            "mean_n_coherence_values"
+        ],
         "b*",
         label="Mixed",
     )

@@ -21,6 +21,7 @@ class PoemLine:
 
 class PoemLineListIterator:
     """Iterator class"""
+
     def __init__(self, candidate_list: PoemLineList):
         self._line_list = candidate_list
         self._index = 0

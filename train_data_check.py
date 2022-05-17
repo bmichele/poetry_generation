@@ -1,7 +1,8 @@
-import os
 import csv
 import logging
+import os
 from typing import List, Tuple
+
 from poem_generator.utils import remove_punct, tokenize
 
 logging.basicConfig(level=logging.DEBUG)
@@ -20,7 +21,7 @@ def get_ngrams(tokens: List[str], n: int) -> List[Tuple[str]]:
     else:
         out = []
         for i in range(len(tokens) - n + 1):
-            out.append(tuple(tokens[i: i + n]))
+            out.append(tuple(tokens[i : i + n]))
         return out
 
 
@@ -53,9 +54,12 @@ for example in train_examples[1:]:
                 ngrams_2 = set(get_ngrams(tokens_trg, n))
                 matching_ngrams = ngrams_1.intersection(ngrams_2)
                 if matching_ngrams and (n / max_overlap_len) > 0.7:
-                    logging.debug("found {} matching {}-grams in line id {}".format(len(matching_ngrams), n, example[0]))
+                    logging.debug(
+                        "found {} matching {}-grams in line id {}".format(
+                            len(matching_ngrams), n, example[0]
+                        )
+                    )
                     logging.debug(example)
                     counter += 1
                     break  # avoid double counting
                 n -= 1
-

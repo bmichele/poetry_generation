@@ -26,7 +26,9 @@ class TestPoemLine(TestCase):
 
 class TestPoemLineList(TestCase):
     def test_candidates(self):
-        my_line_list = PoemLineList(poem_lines=[PoemLine("a"), PoemLine("b"), PoemLine("test")])
+        my_line_list = PoemLineList(
+            poem_lines=[PoemLine("a"), PoemLine("b"), PoemLine("test")]
+        )
         self.assertEqual(my_line_list[0], PoemLine("a"))
         self.assertEqual(my_line_list[1], PoemLine("b"))
         self.assertEqual(my_line_list[2], PoemLine("test"))

@@ -241,8 +241,10 @@ if __name__ == "__main__":
                 fast_tokenize=fast_tokenize,
                 remove_punct=remove_punct,
             )
-            poem_average_scores = np.array([-100.] * poem_scores.shape[1])
-            for i in range(poem_scores.shape[1]):  # loop over columns (corresponds to order n)
+            poem_average_scores = np.array([-100.0] * poem_scores.shape[1])
+            for i in range(
+                poem_scores.shape[1]
+            ):  # loop over columns (corresponds to order n)
                 poem_order_scores = poem_scores[:, i]
                 poem_order_scores = poem_order_scores[~np.isnan(poem_order_scores)]
                 if poem_order_scores.size != 0:
@@ -274,7 +276,7 @@ if __name__ == "__main__":
             "mean_n_coherence_values": average_scores,
             "example_counts": score_counts,
             "std": np.array([np.std(order_scores) for order_scores in scores]),
-            "measured_values": all_poem_average_scores
+            "measured_values": all_poem_average_scores,
         }
 
     # final_results = {

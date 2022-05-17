@@ -169,7 +169,7 @@ class SyntacticCoherenceEstimator:
         for length in range(1, max_ngram_length + 1):
             # print("length {}".format(length))
             for start_index in range(len(sequence) - length + 1):
-                ngram = sequence[start_index: start_index + length]
+                ngram = sequence[start_index : start_index + length]
                 ngrams.append(ngram)
         return ngrams
 
@@ -177,19 +177,25 @@ class SyntacticCoherenceEstimator:
         all_ngrams = []
         for grid in self.grids:
             transposed_grid = grid.array.transpose()
-            grid_columns = ["".join(grid_column.tolist()) for grid_column in transposed_grid]  # TODO: optimize by
-            # using numpy array
+            grid_columns = [
+                "".join(grid_column.tolist()) for grid_column in transposed_grid
+            ]  # TODO: optimize by using numpy array
             for column in grid_columns:
                 # print(column)
                 column_ngrams = self.get_ngrams(column, self.max_ngram)
                 all_ngrams += column_ngrams
         counts = Counter(all_ngrams)
         self.dict_count = dict(counts)
-        self.dict_count["*"] = sum([count for ngram, count in self.dict_count.items() if len(ngram) == 1])
+        self.dict_count["*"] = sum(
+            [count for ngram, count in self.dict_count.items() if len(ngram) == 1]
+        )
 
     @staticmethod
     def probability(
-        annotation: str, history: str, counter: Dict[str, int], unigrams_total_count: int
+        annotation: str,
+        history: str,
+        counter: Dict[str, int],
+        unigrams_total_count: int,
     ):
         if len(history) > 0:
             return counter.get(history + annotation, 0) / counter.get(history, 0)
@@ -218,30 +224,40 @@ class SyntacticCoherenceEstimator:
         # self.compute_probabilities()
 
     def predict(self, paragraph: str, stopwords: bool, max_ngram: int):
-        assert max_ngram <= self.max_ngram, "max_ngram too high. Use a higher max_ngram value when training"
+        assert (
+            max_ngram <= self.max_ngram
+        ), "max_ngram too high. Use a higher max_ngram value when training"
         paragraph_grid = EntityGrid(self.annotator)
         paragraph_grid.train(paragraph, stopwords)
         transposed_grid = paragraph_grid.array.transpose()
         log_probability = 0
         # print(transposed_grid.shape)
         # print(transposed_grid)
-        grid_columns = ["".join(grid_column.tolist()) for grid_column in transposed_grid]
+        grid_columns = [
+            "".join(grid_column.tolist()) for grid_column in transposed_grid
+        ]
         for column in grid_columns:
             # print(column)
             for end_index in range(len(column)):
                 # print(end_index)
-                sliding_window = column[:end_index + 1][-max_ngram:]
+                sliding_window = column[: end_index + 1][-max_ngram:]
                 # print(sliding_window)
                 log_probability += m.log(
-                    self.probability(sliding_window[-1], sliding_window[:-1], self.dict_count, self.dict_count["*"])
+                    self.probability(
+                        sliding_window[-1],
+                        sliding_window[:-1],
+                        self.dict_count,
+                        self.dict_count["*"],
+                    )
                 )
 
         return log_probability / paragraph_grid.array.size
 
 
 class SemanticCoherenceEstimator:
-
-    def __init__(self, w2v_model: KeyedVectors, annotator: Optional[SyntacticAnnotator] = None):
+    def __init__(
+        self, w2v_model: KeyedVectors, annotator: Optional[SyntacticAnnotator] = None
+    ):
         self.w2v_model = w2v_model
         self.annotator = annotator
 
@@ -276,36 +292,45 @@ class SemanticCoherenceEstimator:
             Similarities between `ws1` and `ws2`.
 
         """
-        if not(len(ws1) and len(ws2)):
-            raise ZeroDivisionError('At least one of the passed list is empty.')
+        if not (len(ws1) and len(ws2)):
+            raise ZeroDivisionError("At least one of the passed list is empty.")
         v1 = self._words_to_vectors(ws1)
         v2 = self._words_to_vectors(ws2)
-        if not(len(v1) and len(v2)):
+        if not (len(v1) and len(v2)):
             return float("inf")
         else:
             # return np.dot(matutils.unitvec(np.array(v1).mean(axis=0)), matutils.unitvec(np.array(v2).mean(axis=0)))
-            return self._vector_similarity(np.array(v1).mean(axis=0), np.array(v2).mean(axis=0))
+            return self._vector_similarity(
+                np.array(v1).mean(axis=0), np.array(v2).mean(axis=0)
+            )
 
-    def _line_words(self, line: str, stopwords: bool, fast_tokenize: bool, remove_punct: bool) -> List[str]:
+    def _line_words(
+        self, line: str, stopwords: bool, fast_tokenize: bool, remove_punct: bool
+    ) -> List[str]:
         if remove_punct:
-            line = line.translate(str.maketrans('', '', string.punctuation)).strip()
+            line = line.translate(str.maketrans("", "", string.punctuation)).strip()
         if not stopwords or not fast_tokenize:
-            assert self.annotator is not None, "Annotator required to remove stopwords and proper accurate tokenization"
+            assert (
+                self.annotator is not None
+            ), "Annotator required to remove stopwords and proper accurate tokenization"
             annotated_line = self.annotator.annotate(line)
             if not stopwords:
-                annotated_line = [token for token in annotated_line if not token.is_stop]
+                annotated_line = [
+                    token for token in annotated_line if not token.is_stop
+                ]
             words = [token.text for token in annotated_line]
         else:
             words = line.split()
         return words
 
-    def predict(self,
-                line1: str,
-                line2: str,
-                stopwords: bool = True,
-                fast_tokenize: bool = True,
-                remove_punct: bool = False,
-                ):
+    def predict(
+        self,
+        line1: str,
+        line2: str,
+        stopwords: bool = True,
+        fast_tokenize: bool = True,
+        remove_punct: bool = False,
+    ):
         words_1 = self._line_words(
             line1,
             stopwords=stopwords,
@@ -316,11 +341,15 @@ class SemanticCoherenceEstimator:
             line2,
             stopwords=stopwords,
             fast_tokenize=fast_tokenize,
-            remove_punct=remove_punct
+            remove_punct=remove_punct,
         )
         if not (len(words_1) and len(words_2)):
             return float("inf")
-        logger.debug("Computing self._n_similarity with word sets {} and {}".format(words_1, words_2))
+        logger.debug(
+            "Computing self._n_similarity with word sets {} and {}".format(
+                words_1, words_2
+            )
+        )
         # other options I can consider here:
         #  * normalize vectors before averaging them (n_similarity is not doing that)
         #  * use self.w2v_model.wmdistance instead of n_similarity
@@ -371,13 +400,17 @@ if __name__ == "__main__":
     model_dir = "/Users/miche/uniModels"
 
     w = KeyedVectors.load_word2vec_format(
-        os.path.join(model_dir, "GoogleNews-vectors-negative300.bin"),
-        binary=True
+        os.path.join(model_dir, "GoogleNews-vectors-negative300.bin"), binary=True
     )
 
     nlp = spacy.load("en_core_web_sm")
     my_annotator = SyntacticAnnotator(nlp)
     estimator = SemanticCoherenceEstimator(w, my_annotator)
     estimator.predict("something about dogs", "something about cats", stopwords=True)
-    estimator.predict("something about dogs", "something about money", stopwords=True, fast_tokenize=True)
+    estimator.predict(
+        "something about dogs",
+        "something about money",
+        stopwords=True,
+        fast_tokenize=True,
+    )
     estimator.predict("asds test", "test.", stopwords=False)
