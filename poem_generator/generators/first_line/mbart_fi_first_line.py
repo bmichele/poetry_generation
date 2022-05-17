@@ -1,5 +1,4 @@
 import logging
-from typing import List
 
 import torch
 from transformers import (
@@ -8,14 +7,13 @@ from transformers import (
 )
 
 from poem_generator.io.candidates import PoemLine, PoemLineList
-from poem_generator.utils import remove_punct
 from poem_generator.utils import filter_candidates
 
 # This file contains the code for generating the first line with all supported models.
 # In future, it can become a package with several file (one for each implementation)
 
 BASE_MODEL = "facebook/mbart-large-cc25"
-MODEL_FILE = "models/first-line-fi-20-epochs/pytorch_model.bin"
+MODEL_FILE = "models/poetry-generation-firstline-mbart-ws-fi-sorted/pytorch_model.bin"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
