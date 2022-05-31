@@ -55,3 +55,30 @@ if [ ! -d poetry-generation-nextline-mbart-ws-fi-single ]; then
     cd ..
     )
 fi
+
+
+##################
+# Swedish models #
+##################
+
+# First line
+if [ ! -d poetry-generation-firstline-mbart-ws-sv-test ]; then
+    #git clone https://huggingface.co/varie/poetry-generation-firstline-mbart-ws-sv-test
+    mkdir poetry-generation-firstline-mbart-ws-sv-test
+    (
+    cd poetry-generation-firstline-mbart-ws-sv-test || exit
+    wget https://huggingface.co/varie/poetry-generation-firstline-mbart-ws-sv-test/resolve/main/pytorch_model.bin
+    cd ..
+    )
+fi
+
+# Next line
+if [ ! -d poetry-generation-nextline-mbart-ws-sv-test ]; then
+    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-sv-test
+    mkdir poetry-generation-nextline-mbart-ws-sv-test
+    (
+    cd poetry-generation-nextline-mbart-ws-sv-test || exit
+    wget https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-sv-test/resolve/main/pytorch_model.bin
+    cd ..
+    )
+fi

@@ -1,8 +1,10 @@
 from poem_generator.generators.first_line import mbart_en_first_line
 from poem_generator.generators.first_line import mbart_fi_first_line
+from poem_generator.generators.first_line import mbart_sv_first_line
 from poem_generator.generators.next_line import from_model_config
 from poem_generator.generators.next_line import mbart_en_single_line
 from poem_generator.generators.next_line import mbart_fi_single_line
+from poem_generator.generators.next_line import mbart_sv_single_line
 from poem_generator.io.candidates import PoemLine, PoemLineList
 from poem_generator.io.config import PoemGeneratorConfiguration
 
@@ -24,6 +26,8 @@ class PoemGenerator:
                 return mbart_fi_single_line.get_tokenizer_and_model()
             elif self.config.lang == "en":
                 return mbart_en_single_line.get_tokenizer_and_model()
+            elif self.config.lang == "sv":
+                return mbart_sv_single_line.get_tokenizer_and_model()
             else:
                 raise NotImplementedError
 
@@ -36,6 +40,8 @@ class PoemGenerator:
                 return mbart_fi_first_line.get_model()
             elif self.config.lang == "en":
                 return mbart_en_first_line.get_model()
+            elif self.config.lang == "sv":
+                return mbart_sv_first_line.get_model()
             else:
                 raise NotImplementedError
 
@@ -46,6 +52,10 @@ class PoemGenerator:
             )
         elif self.config.lang == "en":
             return mbart_en_first_line.generate(
+                keywords, self.tokenizer, self.first_line_model
+            )
+        elif self.config.lang == "sv":
+            return mbart_sv_first_line.generate(
                 keywords, self.tokenizer, self.first_line_model
             )
         else:
@@ -63,6 +73,10 @@ class PoemGenerator:
                 )
             elif self.config.lang == "en":
                 return mbart_en_single_line.generate(
+                    self.state, self.tokenizer, self.model
+                )
+            elif self.config.lang == "sv":
+                return mbart_sv_single_line.generate(
                     self.state, self.tokenizer, self.model
                 )
             else:
