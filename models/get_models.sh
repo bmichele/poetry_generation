@@ -62,12 +62,12 @@ fi
 ##################
 
 # First line
-if [ ! -d poetry-generation-firstline-mbart-ws-sv-test ]; then
-    #git clone https://huggingface.co/varie/poetry-generation-firstline-mbart-ws-sv-test
-    mkdir poetry-generation-firstline-mbart-ws-sv-test
+if [ ! -d poetry-generation-firstline-mbart-ws-sv-capitalized ]; then
+    #git clone https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-sv-capitalized
+    mkdir poetry-generation-firstline-mbart-ws-sv-capitalized
     (
-    cd poetry-generation-firstline-mbart-ws-sv-test || exit
-    wget https://huggingface.co/varie/poetry-generation-firstline-mbart-ws-sv-test/resolve/main/pytorch_model.bin
+    cd poetry-generation-firstline-mbart-ws-sv-capitalized || exit
+    wget https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-sv-capitalized/resolve/main/pytorch_model.bin
     cd ..
     )
 fi

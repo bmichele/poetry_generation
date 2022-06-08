@@ -14,7 +14,9 @@ from poem_generator.utils import filter_candidates
 # In future, it can become a package with several file (one for each implementation)
 
 BASE_MODEL = "facebook/mbart-large-50"
-MODEL_FILE = "models/poetry-generation-firstline-mbart-ws-sv-test/pytorch_model.bin"
+MODEL_FILE = (
+    "models/poetry-generation-firstline-mbart-ws-sv-capitalized/pytorch_model.bin"
+)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 

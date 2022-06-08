@@ -29,11 +29,12 @@ $ python
 >>> from poem_generator.generator import PoemGenerator
 >>> from poem_generator.io.config import PoemGeneratorConfiguration
 >>>
->>> # give keywords
->>> keywords = "rakkaus anarkia"
 >>> # initialize the generator
 >>> config = PoemGeneratorConfiguration(lang="fi", style="modern")
 >>> generator = PoemGenerator(config)
+>>>
+>>> # give keywords
+>>> keywords = "rakkaus anarkia"
 >>>
 >>> # generate candidates for the first line with the `PoemGenerator.get_first_line_candidates` method
 >>> first_line_candidates = generator.get_first_line_candidates(keywords)
