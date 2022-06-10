@@ -21,6 +21,8 @@ $ bash get_models.sh
 $ cd ..
 ```
 
+### Using the Library to Generate Poems
+
 At this point, you can use the `generator` class to generate a poem as follows.  
 Disclaimer: the generator might not be able to write down the Kalevala :sweat_smile:
 ```shell
@@ -65,6 +67,16 @@ A simple command-line utilities to generate poems can be found in `example.py`. 
 python example.py
 ```
 Then you can just follow the instructions from the prompt!
+
+### Web Server
+
+To run the web server, run the following:
+```shell
+export API_KEY="supersecret"
+uvicorn app:app --host 0.0.0.0
+```
+
+At the moment the API is not documented, but we provide example scripts in the `scripts/api_test` folder.
 
 ## Repository Files and Folders
 
