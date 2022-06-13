@@ -5,6 +5,7 @@ PORT=8000
 
 curl -v -H "key: supersecret" -H "Content-Type: application/json" -X POST "${URL}:${PORT}/generator/first_line" \
   -d '{
+        "poem_id": "testPoem",
         "language": "en",
         "style": "",
         "keywords": "table sun"

@@ -1,5 +1,6 @@
 import os
-from typing import List
+import uuid
+from typing import List, Optional
 
 from fastapi import Depends, FastAPI, Security, HTTPException
 from fastapi.security import APIKeyHeader
@@ -24,17 +25,19 @@ class Token(BaseModel):
 
 
 class GeneratorRequest(BaseModel):
-    # poem_state: List[str]
     language: str
     style: str
 
 
 class GeneratorFirstLineRequest(GeneratorRequest):
     keywords: str
+    poem_id: Optional[str]
 
 
 class GeneratorNextLineRequest(GeneratorRequest):
     poem_state: List[str]
+    line_id: int
+    poem_id: str
 
 
 class Candidate(BaseModel):
@@ -43,6 +46,10 @@ class Candidate(BaseModel):
 
 
 class GeneratorResponse(BaseModel):
+    poem_id: str
+    line_id: int
+    language: str
+    style: str
     candidates: List[Candidate]
 
 
@@ -96,11 +103,17 @@ def get_first_line_candidates(
     candidates = lang_generator[data.language].get_first_line_candidates(
         keywords=data.keywords
     )
+
+    poem_id = data.poem_id if data.poem_id else str(uuid.uuid4())
     return GeneratorResponse(
+        poem_id=poem_id,
+        line_id=0,
+        language=data.language,
+        style=data.style,
         candidates=[
             Candidate(poem_line=candidate.text, poem_state=[candidate.text])
             for candidate in candidates
-        ]
+        ],
     )
 
 
@@ -123,10 +136,14 @@ def get_next_line_candidates(
     )
     candidates = lang_generator[data.language].get_line_candidates()
     return GeneratorResponse(
+        poem_id=data.poem_id,
+        line_id=data.line_id + 1,
+        language=data.language,
+        style=data.style,
         candidates=[
             Candidate(
                 poem_line=candidate.text, poem_state=data.poem_state + [candidate.text]
             )
             for candidate in candidates
-        ]
+        ],
     )
