@@ -37,8 +37,13 @@ class GeneratorNextLineRequest(GeneratorRequest):
     poem_state: List[str]
 
 
+class Candidate(BaseModel):
+    poem_line: str
+    poem_state: List[str]
+
+
 class GeneratorResponse(BaseModel):
-    candidates: List[str]
+    candidates: List[Candidate]
 
 
 class Error(BaseModel):
@@ -91,7 +96,12 @@ def get_first_line_candidates(
     candidates = lang_generator[data.language].get_first_line_candidates(
         keywords=data.keywords
     )
-    return GeneratorResponse(candidates=[candidate.text for candidate in candidates])
+    return GeneratorResponse(
+        candidates=[
+            Candidate(poem_line=candidate.text, poem_state=[candidate.text])
+            for candidate in candidates
+        ]
+    )
 
 
 @logger.catch
@@ -112,4 +122,11 @@ def get_next_line_candidates(
         [PoemLine(line) for line in data.poem_state]
     )
     candidates = lang_generator[data.language].get_line_candidates()
-    return GeneratorResponse(candidates=[candidate.text for candidate in candidates])
+    return GeneratorResponse(
+        candidates=[
+            Candidate(
+                poem_line=candidate.text, poem_state=data.poem_state + [candidate.text]
+            )
+            for candidate in candidates
+        ]
+    )

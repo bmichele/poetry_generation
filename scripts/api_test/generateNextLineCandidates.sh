@@ -7,5 +7,5 @@ curl -v -H "key: supersecret" -H "Content-Type: application/json" -X POST "${URL
   -d '{
         "language": "en",
         "style": "",
-        "poem_state": ["The test and the example of mankind,"]
+        "poem_state":["The test and the example of mankind,","To guard the virtues of their noblest minds,"]
       }'
