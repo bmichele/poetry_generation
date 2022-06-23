@@ -78,7 +78,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_keyboard = [["en"], ["fi"], ["sv"]]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     await update.message.reply_text(
-        "Hi! My name is Doctor Botter. Select language.",
+        "Hi! My name is Casper, amd I am a CASual PoEtry cReator. Select the language for generating your poem.",
         reply_markup=markup,
     )
 
