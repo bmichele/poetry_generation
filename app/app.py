@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 from typing import List, Optional
 
 from fastapi import Depends, FastAPI, Security, HTTPException
@@ -7,6 +8,7 @@ from fastapi.security import APIKeyHeader
 from loguru import logger
 from pydantic import BaseModel
 
+from elasticsearch import Elasticsearch
 from poem_generator.generator import (
     PoemGenerator,
     PoemGeneratorConfiguration,
@@ -17,6 +19,16 @@ from poem_generator.generator import (
 app = FastAPI()
 
 api_key = APIKeyHeader(name="key")
+
+# Setup elasticsearch client
+es = Elasticsearch(
+    "http://elasticsearch:9200",
+    # basic_auth=("elastic", "GzddIgJdG9GhpFf7TMnf"),
+    # verify_certs=True,
+    # ca_certs="./http_ca.crt",
+)
+
+# if not es.indices.exists(index="index_english.logs"):
 
 
 class Token(BaseModel):
@@ -67,17 +79,17 @@ def is_authorized(oauth_header: str = Security(api_key)):
 logger.info("Initializing en generator")
 config_en = PoemGeneratorConfiguration(lang="en", style="")
 generator_en = PoemGenerator(config_en)
-# logger.info("Initializing fi generator")
-# config_fi = PoemGeneratorConfiguration(lang="fi", style="")
-# generator_fi = PoemGenerator(config_fi)
-# logger.info("Initializing sv generator")
-# config_sv = PoemGeneratorConfiguration(lang="sv", style="")
-# generator_sv = PoemGenerator(config_sv)
+logger.info("Initializing fi generator")
+config_fi = PoemGeneratorConfiguration(lang="fi", style="")
+generator_fi = PoemGenerator(config_fi)
+logger.info("Initializing sv generator")
+config_sv = PoemGeneratorConfiguration(lang="sv", style="")
+generator_sv = PoemGenerator(config_sv)
 
 lang_generator = {
     "en": generator_en,
-    # "fi": generator_fi,
-    # "sv": generator_sv,
+    "fi": generator_fi,
+    "sv": generator_sv,
 }
 
 
@@ -105,9 +117,26 @@ def get_first_line_candidates(
     )
 
     poem_id = data.poem_id if data.poem_id else str(uuid.uuid4())
+    line_id = 0
+
+    doc = {
+        "poem_id": poem_id,
+        "line_id": line_id,
+        "timestamp": datetime.now(),
+        "style": data.style,
+        "keywords": data.keywords,
+        "poem_state": None,
+        "generated_candidates": [candidate.text for candidate in candidates],
+    }
+    es.index(
+        index="index_{}.logs".format(data.language),
+        id="{}|{}".format(poem_id, line_id),
+        body=doc,
+    )
+
     return GeneratorResponse(
         poem_id=poem_id,
-        line_id=0,
+        line_id=line_id,
         language=data.language,
         style=data.style,
         candidates=[
@@ -135,9 +164,26 @@ def get_next_line_candidates(
         [PoemLine(line) for line in data.poem_state]
     )
     candidates = lang_generator[data.language].get_line_candidates()
+    line_id = data.line_id + 1
+
+    doc = {
+        "poem_id": data.poem_id,
+        "line_id": line_id,
+        "timestamp": datetime.now(),
+        "style": data.style,
+        "keywords": None,
+        "poem_state": data.poem_state,
+        "generated_candidates": [candidate.text for candidate in candidates],
+    }
+    es.index(
+        index="index_{}.logs".format(data.language),
+        id="{}|{}".format(data.poem_id, line_id),
+        body=doc,
+    )
+
     return GeneratorResponse(
         poem_id=data.poem_id,
-        line_id=data.line_id + 1,
+        line_id=line_id,
         language=data.language,
         style=data.style,
         candidates=[

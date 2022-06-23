@@ -3,3 +3,7 @@ transformers==4.15.0
 datasets==1.17.0
 protobuf==3.19.3
 sentencepiece==0.1.96
+fastapi
+uvicorn
+loguru
+elasticsearch==7.1.0
