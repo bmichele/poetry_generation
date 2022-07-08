@@ -1,0 +1,69 @@
+version: '3.7'
+
+services:
+
+  app:
+    build: app
+    volumes:
+      - ./app/models:/code/models
+    environment:
+      - API_KEY=${APP_API_KEY}
+      - ES_HOST=${ELASTIC_HOST}
+      - ES_USER=${ELASTIC_USER}
+      - ES_PWD=${ELASTIC_PWD}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    depends_on:
+      - elasticsearch
+
+  bot:
+    build: bot
+    environment:
+      - API_TOKEN=${BOT_API_TOKEN}
+      - APP_HOST=http://app:8000
+      - APP_KEY=${APP_API_KEY}
+    depends_on:
+      - app
+
+  # Elasticsearch Docker Images: https://www.docker.elastic.co/
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.4.0
+    container_name: elasticsearch
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+#      - elasticsearch-data:/usr/share/elasticsearch/data
+      - ./elasticsearch/data:/usr/share/elasticsearch/data
+      - ./elasticsearch/logs:/usr/share/elasticsearch/logs
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+#  kibana:
+#    container_name: kibana
+#    image: docker.elastic.co/kibana/kibana:7.4.0
+#    environment:
+#      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+#    ports:
+#      - 5601:5601
+#    depends_on:
+#      - elasticsearch
