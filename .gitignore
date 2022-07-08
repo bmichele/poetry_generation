@@ -6,3 +6,6 @@ models/*
 !models/get_models.sh
 *.log
 scripts/annoy_index*
+# contains sensitive data
+.env.prod
+docker-compose.prod.yml
