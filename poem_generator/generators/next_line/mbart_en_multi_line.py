@@ -11,7 +11,9 @@ from poem_generator.utils import filter_candidates
 
 
 BASE_MODEL = "facebook/mbart-large-cc25"
-MODEL_FILE = "models/poetry-generation-nextline-mbart-gut-en-multi/pytorch_model.bin"
+MODEL_FILE = (
+    "models/poetry-generation-nextline-mbart-gut-en-multi-75k/pytorch_model.bin"
+)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
