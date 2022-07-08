@@ -1,3 +1,4 @@
+import random
 import re
 from typing import List
 
@@ -11,11 +12,14 @@ def tokenize(text: str) -> List[str]:
     return text.split()
 
 
-def filter_candidates(candidates: List[str], remove_duplicates: bool = True):
+def filter_candidates(
+    candidates: List[str], remove_duplicates: bool = True, n_max: int = None
+):
     out = [
         candidate for candidate in candidates if remove_punct(candidate)
     ]  # make sure that lines containing only punctuation are excluded
     if remove_duplicates:
-        return list(set(out))
-    else:
-        return out
+        out = list(set(out))
+    if n_max > 0:
+        out = random.sample(out, n_max)
+    return out

@@ -96,6 +96,7 @@ def generate(
             for candidate in filter_candidates(
                 candidates,
                 remove_duplicates=generation_config.remove_duplicate_candidates,
+                n_max=4,  # TODO: this should be set from config
             )
         ]
     )

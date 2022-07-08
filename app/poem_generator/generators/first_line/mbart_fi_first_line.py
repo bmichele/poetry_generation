@@ -72,5 +72,8 @@ def generate(keywords, tokenizer, model) -> PoemLineList:
     logging.info("Generated candidates {}".format(candidates))
 
     return PoemLineList(
-        [PoemLine(text=candidate) for candidate in filter_candidates(candidates)]
+        [
+            PoemLine(text=candidate)
+            for candidate in filter_candidates(candidates, n_max=4)
+        ]
     )
