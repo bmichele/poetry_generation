@@ -3,6 +3,8 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/25dc644dae5a45c3a19261181f5b8b3e)](https://app.codacy.com/gh/bmichele/poetry_generation?utm_source=github.com&utm_medium=referral&utm_content=bmichele/poetry_generation&utm_campaign=Badge_Grade_Settings)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
+TODO: update this readme!
+
 This repository contains a simple implementation and some examples to generate poems with python by using neural network models.  
 To contribute to this project, please send us a pull request from your fork of this repository. If you want to contribute, more information are given in the [contribution guideline](https://github.com/bmichele/poetry_generation/blob/main/CONTRIBUTING.md).
 
@@ -78,6 +80,13 @@ uvicorn app:app --host 0.0.0.0
 
 At the moment the API is not documented, but we provide example scripts in the `scripts/api_test` folder.
 
+### Docker
+
+To run the Telegram bot in docker:
+ * set the Telegram bot id in the `.env` file
+ * download the models by `cd app/models && bash get_models.sh && cd -` 
+ * build and run the docker images `docker-compose build && docker-compose up`
+
 ## Repository Files and Folders
 
  * `training_config` contains example configuration files for the `train_gen_model.py` script  
@@ -138,14 +147,3 @@ Corpus downloaded from https://github.com/aparrish/gutenberg-poetry-corpus
 
 Tentative script to separate actual poetry in the books... Not usable, must be improved.
 
-## Some TODOs
-
-Problem: quite often, the output sequence is just a copy of the input sequence - or very similar.
-Could this be due to the presence of songs in the training data? If so, there are probably many examples taken from
-choruses. Potentially, this could lead to a high number of training examples where the source sentence is the same as 
-the output sentence, explaining the problem.
-
-I should check the overlapping between source and target sentences, and try to deduplicate them,e.g. by
- * check when they are ==
- * check number of overlapping token ngrams
- * using a dedicate package (onion?)
