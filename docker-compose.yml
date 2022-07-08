@@ -4,17 +4,13 @@ services:
 
   app:
     build: app
-#    volumes:
-#      - .:/app
+    volumes:
+      - ./app/models:/code/models
     environment:
       - API_KEY=${APP_API_KEY}
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+      - ES_HOST=${ELASTIC_HOST}
+      - ES_USER=${ELASTIC_USER}
+      - ES_PWD=${ELASTIC_PWD}
     expose:
       - 8000
     ports:

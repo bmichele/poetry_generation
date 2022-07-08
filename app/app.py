@@ -1,4 +1,5 @@
 import os
+import time
 import uuid
 from datetime import datetime
 from typing import List, Optional
@@ -22,13 +23,14 @@ api_key = APIKeyHeader(name="key")
 
 # Setup elasticsearch client
 es = Elasticsearch(
-    "http://elasticsearch:9200",
-    # basic_auth=("elastic", "GzddIgJdG9GhpFf7TMnf"),
-    # verify_certs=True,
-    # ca_certs="./http_ca.crt",
+    os.environ["ES_HOST"],
+    basic_auth=(os.environ["ES_USER"], os.environ["ES_PWD"]),
+    verify_certs=False,
 )
 
-# if not es.indices.exists(index="index_english.logs"):
+logger.info("Waiting for ElasticSearch")
+time.sleep(30)
+logger.info(es.info())
 
 
 class Token(BaseModel):
