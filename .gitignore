@@ -2,8 +2,8 @@
 README_cpouta.md
 .idea
 __pycache__
-models/*
-!models/get_models.sh
+app/models/*
+!app/models/get_models.sh
 *.log
 scripts/annoy_index*
 # contains sensitive data
