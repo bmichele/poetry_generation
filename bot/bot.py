@@ -78,7 +78,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     reply_keyboard = [["en"], ["fi"], ["sv"]]
     markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
     await update.message.reply_text(
-        "Hi! My name is Casper, amd I am a CASual PoEtry cReator. Select the language for generating your poem.",
+        "Hi! My name is Casper, amd I am a CASual PoEtry cReator. \n\nAs a first step, please select the language for "
+        "generating your poem. \n\n[Btw, I do not collect any user information. For future research, I store the poem "
+        "lines I generate and your selections.]",
         reply_markup=markup,
     )
 
