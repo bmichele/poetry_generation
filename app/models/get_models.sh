@@ -19,14 +19,24 @@ if [ ! -d poetry-generation-firstline-mbart-ws-en-sorted ]; then
     )
 fi
 
-# Next line
-if [ ! -d poetry-generation-nextline-mbart-gut-en-single ]; then
-    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single
+## Next line
+#if [ ! -d poetry-generation-nextline-mbart-gut-en-single ]; then
+#    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single
+#    echo "Downloading next line English model"
+#    mkdir poetry-generation-nextline-mbart-gut-en-single
+#    (
+#    cd poetry-generation-nextline-mbart-gut-en-single || exit
+#    wget -q https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single/resolve/main/pytorch_model.bin
+#    cd ..
+#    )
+#fi
+if [ ! -d poetry-generation-nextline-mbart-gut-en-multi-75k ]; then
+    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-multi-75k
     echo "Downloading next line English model"
-    mkdir poetry-generation-nextline-mbart-gut-en-single
+    mkdir poetry-generation-nextline-mbart-gut-en-multi-75k
     (
-    cd poetry-generation-nextline-mbart-gut-en-single || exit
-    wget -q https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-single/resolve/main/pytorch_model.bin
+    cd poetry-generation-nextline-mbart-gut-en-multi-75k || exit
+    wget -q https://huggingface.co/bmichele/poetry-generation-nextline-mbart-gut-en-multi-75k/resolve/main/pytorch_model.bin
     cd ..
     )
 fi
