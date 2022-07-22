@@ -54,17 +54,25 @@ if [ ! -d poetry-generation-firstline-mbart-ws-fi-sorted ]; then
     )
 fi
 
-# Next line
-if [ ! -d poetry-generation-nextline-mbart-ws-fi-single ]; then
+## Next line
+#if [ ! -d poetry-generation-nextline-mbart-ws-fi-single ]; then
+#    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-fi-single
+#    mkdir poetry-generation-nextline-mbart-ws-fi-single
+#    (
+#    cd poetry-generation-nextline-mbart-ws-fi-single || exit
+#    wget https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-fi-single/resolve/main/pytorch_model.bin
+#    cd ..
+#    )
+#fi
+if [ ! -d poetry-generation-nextline-mbart-all-fi-multi ]; then
     #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-fi-single
-    mkdir poetry-generation-nextline-mbart-ws-fi-single
+    mkdir poetry-generation-nextline-mbart-all-fi-multi
     (
-    cd poetry-generation-nextline-mbart-ws-fi-single || exit
-    wget https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-fi-single/resolve/main/pytorch_model.bin
+    cd poetry-generation-nextline-mbart-all-fi-multi || exit
+    wget https://huggingface.co/varie/poetry-generation-nextline-mbart-all-fi-multi/resolve/main/pytorch_model.bin
     cd ..
     )
 fi
-
 
 ##################
 # Swedish models #
