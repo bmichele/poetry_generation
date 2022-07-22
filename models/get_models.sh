@@ -8,12 +8,20 @@
 ##################
 
 # First line
-if [ ! -d poetry-generation-firstline-mbart-ws-en-sorted ]; then
-    #git clone https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted
-    mkdir poetry-generation-firstline-mbart-ws-en-sorted
+#if [ ! -d poetry-generation-firstline-mbart-ws-en-sorted ]; then
+#    #git clone https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted
+#    mkdir poetry-generation-firstline-mbart-ws-en-sorted
+#    (
+#    cd poetry-generation-firstline-mbart-ws-en-sorted || exit
+#    wget https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted/resolve/main/pytorch_model.bin
+#    cd ..
+#    )
+#fi
+if [ ! -d poetry-generation-firstline-mbart-all-fi-unsorted ]; then
+    mkdir poetry-generation-firstline-mbart-all-fi-unsorted
     (
-    cd poetry-generation-firstline-mbart-ws-en-sorted || exit
-    wget https://huggingface.co/bmichele/poetry-generation-firstline-mbart-ws-en-sorted/resolve/main/pytorch_model.bin
+    cd poetry-generation-firstline-mbart-all-fi-unsorted || exit
+    wget https://huggingface.co/varie/poetry-generation-firstline-mbart-all-fi-unsorted/resolve/main/pytorch_model.bin
     cd ..
     )
 fi

@@ -13,7 +13,9 @@ from poem_generator.utils import filter_candidates
 # In future, it can become a package with several file (one for each implementation)
 
 BASE_MODEL = "facebook/mbart-large-cc25"
-MODEL_FILE = "models/poetry-generation-firstline-mbart-ws-fi-sorted/pytorch_model.bin"
+MODEL_FILE = (
+    "models/poetry-generation-firstline-mbart-all-fi-unsorted/pytorch_model.bin"
+)
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -61,8 +63,8 @@ def generate(keywords, tokenizer, model) -> PoemLineList:
         encoded,
         do_sample=True,
         max_length=16,
-        temperature=5.0,
-        top_k=5,
+        temperature=2.0,
+        top_k=50,
     )
 
     candidates = [
