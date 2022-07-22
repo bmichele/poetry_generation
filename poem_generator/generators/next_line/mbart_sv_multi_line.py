@@ -17,14 +17,15 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def get_tokenizer_and_model():
     tokenizer = MBart50TokenizerFast.from_pretrained(
         BASE_MODEL,
-        src_lang="fi_FI",
-        tgt_lang="fi_FI",
-        additional_special_tokens=[">>>SEP<<<"],
+        src_lang="sv_SE",
+        tgt_lang="sv_SE",
+        # FIXME: the model should be trained with the special token >>>SEP<<< and the following line uncommented
+        # additional_special_tokens=[">>>SEP<<<"],
     )
 
     logging.info("Loading base model {}".format(BASE_MODEL))
     model = MBartForConditionalGeneration.from_pretrained(BASE_MODEL)
-    model.config.decoder_start_token_id = tokenizer.lang_code_to_id["fi_FI"]
+    model.config.decoder_start_token_id = tokenizer.lang_code_to_id["sv_SE"]
 
     model.resize_token_embeddings(len(tokenizer))
     logging.info("Model vocab size is {}".format(model.config.vocab_size))
@@ -39,10 +40,7 @@ def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:
     Implementation of next line poem generator using mbart for finnish language
     :return:
     """
-    source = (
-        " >>>SEP<<< ".join(poem_line.text for poem_line in poem_state.to_list()[-3:])
-        + " >>>SEP<<< "
-    )
+    source = ">>>SEP<<<".join(poem_line.text for poem_line in poem_state.to_list()[-3:])
     encoded = tokenizer.encode(
         source, padding="max_length", max_length=32, truncation=True
     )
@@ -52,7 +50,7 @@ def generate(poem_state: PoemLineList, tokenizer, model) -> PoemLineList:
         encoded,
         do_sample=True,
         max_length=32,
-        temperature=1.0,
+        temperature=2.0,
         top_k=50,
     )
 
