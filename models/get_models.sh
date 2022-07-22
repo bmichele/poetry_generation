@@ -82,12 +82,12 @@ if [ ! -d poetry-generation-firstline-mbart-ws-sv-capitalized ]; then
 fi
 
 # Next line
-if [ ! -d poetry-generation-nextline-mbart-ws-sv-test ]; then
-    #git clone https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-sv-test
-    mkdir poetry-generation-nextline-mbart-ws-sv-test
+if [ ! -d poetry-generation-nextline-mbart-ws-sv-multi ]; then
+    #git clone https://huggingface.co/varie/poetry-generation-nextline-mbart-ws-sv-multi
+    mkdir poetry-generation-nextline-mbart-ws-sv-multi
     (
-    cd poetry-generation-nextline-mbart-ws-sv-test || exit
-    wget https://huggingface.co/bmichele/poetry-generation-nextline-mbart-ws-sv-test/resolve/main/pytorch_model.bin
+    cd poetry-generation-nextline-mbart-ws-sv-multi || exit
+    wget https://huggingface.co/varie/poetry-generation-nextline-mbart-ws-sv-multi/resolve/main/pytorch_model.bin
     cd ..
     )
 fi
